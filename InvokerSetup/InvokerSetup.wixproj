@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{EDA3606D-704F-4A99-9072-2AD128424A1B}</ProjectGuid>
+    <ProjectTypeGuids>{CFEE4113-1246-4D54-95CB-156813CB8593}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Package</OutputType>
+    <RootNamespace>InvokerSetup</RootNamespace>
+    <OutputName>InvokerSetup</OutputName>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <SupressIces>ICE45;ICE69</SupressIces>
+    <WixVariables>WixUILicenseRtf=license.rtf</WixVariables>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Files.wxs" />    
+    <Compile Include="Setup.wxs" />    
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="license.rtf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClipUtil\ClipUtil.csproj">
+      <Project>{ca08ff79-9d17-46a7-9f9f-0f779c86d2aa}</Project>
+      <Name>ClipUtil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invoker\Invoker.csproj">
+      <Project>{358d9230-eda5-4f7a-9933-64e5b2e1b625}</Project>
+      <Name>Invoker</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  
+  <Target Name="BeforeBuild">	 
+	  <!--HeatDirectory 
+
+      OutputFile="$(ProjectDir)\DynamicFiles.wxs" 
+
+      Directory="..\PullInfo\target\classes\PullInfoScript" 
+
+      ComponentGroupName="PullInfoFiles" 
+
+      DirectoryRefId="INSTALLDIR" 
+
+      AutogenerateGuids="true" 
+
+      PreprocessorVariable="var.PullInfoScriptLocation" 
+
+      SuppressRegistry="true" 
+
+      SuppressRootDirectory="false" 
+
+      ToolPath="$(WixToolPath)" 
+
+      NoLogo="true" /-->
+  </Target>
+</Project>

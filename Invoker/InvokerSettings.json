@@ -1,0 +1,116 @@
+﻿{
+	"properties": {
+		"chrome.path": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+		"PuTTY.path": "C:\\Program Files\\PuTTY\\PuTTY.exe",
+		"winscp.com.path": "c:\\Program Files (x86)\\WinSCP\\WinSCP.com",
+		"winscp.path": "c:\\Program Files (x86)\\WinSCP\\WinSCP.exe",
+		"vnc.path": "C:\\Program Files\\RealVNC\\VNC Viewer\\vncviewer.exe",
+		"host.ip": "localhost",
+		"host.puttyPort": "22",
+		"host.username": "wrsroot",
+		"host.password": "Minda00$",
+		"host.vncPort": "1"
+	},
+	"invokes": [
+		{
+			"name": "Run ipconfig",
+			"description": "Get IP of the workstation",
+			"hotkeyString": "CTRL+SHIFT+I",
+			"enableButton": true,
+			"commands": [
+				{
+					"type": "exec",
+					"path": "ipconfig",
+					"args": [],
+					"shell": false,
+					"env": {},
+					"waitForExit": true,
+					"saveOutput": true,
+					"outputProperty": "ipconfig.output"
+				},
+				{
+					"type": "info",
+					"comments": "$var{ipconfig.output}"
+				}
+			]
+		},
+		{
+			"name": "Open PuTTY",
+			"description": "Opens PuTTY for host",
+			"hotkeyString": "CTRL+SHIFT+P",
+			"enableButton": true,
+			"commands": [
+				{
+					"type": "exec",
+					"path": "${PuTTY.path}",
+					"args": [
+						"-ssh ${host.ip} -P ${host.puttyPort} -l ${host.username} -pw ${host.password}"
+					],
+					"shell": false,
+					"env": {},
+					"waitForExit": false
+				}
+			]
+		},
+		{
+			"name": "Open WinSCP",
+			"description": "Opens WinSCP for host",
+			"hotkeyString": "CTRL+SHIFT+L",
+			"enableButton": true,
+			"commands": [
+				{
+					"type": "exec",
+					"path": "${winscp.path}",
+					"args": [
+						"${host.username}:${host.password}@${host.ip}:${host.puttyPort}"
+					],
+					"shell": false,
+					"env": {},
+					"waitForExit": false
+				}
+			]
+		},
+		{
+			"name": "Open VNC",
+			"description": "Opens VNC for host",
+			"hotkeyString": "CTRL+SHIFT+V",
+			"enableButton": true,
+			"commands": [
+				{
+					"type": "exec",
+					"path": "${vnc.path}",
+					"args": [
+						"${host.ip}:${host.vncPort}"
+					],
+					"shell": false,
+					"env": {},
+					"waitForExit": false
+				}
+			]
+		},
+		{
+			"name": "Ping host",
+			"description": "Ping the host",
+			"enableButton": true,
+			"commands": [
+				{
+					"type": "exec",
+					"path": "ping",
+					"args": [
+						"${host.ip}"
+					],
+					"hideWindow": true,
+					"shell": false,
+					"env": {},
+					"waitForExit": true,
+					"saveOutput": true,
+					"outputProperty": "ping.output"
+				},
+				{
+					"type": "info",
+					"comments": "$var{ping.output}"
+				}
+			]
+		}
+	]
+}
