@@ -7,8 +7,8 @@
 		"vnc.path": "C:\\Program Files\\RealVNC\\VNC Viewer\\vncviewer.exe",
 		"host.ip": "localhost",
 		"host.puttyPort": "22",
-		"host.username": "wrsroot",
-		"host.password": "Minda00$",
+		"host.username": "user",
+		"host.password": "password",
 		"host.vncPort": "1"
 	},
 	"invokes": [

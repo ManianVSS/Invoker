@@ -24,9 +24,11 @@ namespace Invoker
 	/// </summary>
 	public partial class MainForm : Form
 	{
-		static string InvokerSettingDirectory=Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location)+"\\";
+		static string InvokerSettingDirectory=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+"\\.invoker\\";
+		static string assemblyLocation=Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location);
+		static string originalSettingsFile=assemblyLocation+"\\"+"InvokerSettings.json";
 		
-		static string settingsFile=InvokerSettingDirectory+"InvokerSettings.json";
+		static string userSettingsFile=InvokerSettingDirectory+"\\"+"InvokerSettings.json";
 		
 		InvokerSettings invokerSettings=null;
 		
@@ -139,54 +141,64 @@ namespace Invoker
 		
 		void LoadProperties(string envName="default")
 		{
-			invokerSettings=File.Exists(settingsFile)?InvokerSettings.getFromFile(settingsFile):new InvokerSettings();
+			if(!File.Exists(userSettingsFile))
+			{
+				if(File.Exists(originalSettingsFile))
+				{
+					File.Copy(originalSettingsFile, userSettingsFile);
+				}
+				else
+				{
+					MessageBox.Show("Settings file missing: "+originalSettingsFile+". Restore the file or repair application from control panel and try again.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+					
+					Environment.Exit(-1);
+//					switch(MessageBox.Show("Settings json file "+originalSettingsFile+" was not found. Do you want to create one?","<!>",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation))
+//					{
+//						case DialogResult.OK:
+//						case DialogResult.Yes:
+//							new InvokerSettings().saveToFile(originalSettingsFile);
+//							File.Copy(originalSettingsFile, userSettingsFile);
+//							break;
+//					}
+				}
+			}
+			
+			invokerSettings=File.Exists(userSettingsFile)?InvokerSettings.getFromFile(userSettingsFile):(File.Exists(originalSettingsFile)?InvokerSettings.getFromFile(originalSettingsFile):new InvokerSettings());
 			
 			execProperties.Clear();
-			execProperties.Add("_invoker_general_properties_file",new FileInfo(settingsFile).FullName);
+			execProperties.Add("_invoker_general_properties_file",new FileInfo(userSettingsFile).FullName);
 			execProperties.Add("_invoker_environment_settings_file",Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location)+"\\"+envName+".env.json");
 			execProperties.Add("_specialChar_newLine","\n");
 			execProperties.Add("_specialChar_backspace","\b");
 			execProperties.Add("_specialChar_escape",'\x1b'.ToString());
 			
+			envSettingsMap.Clear();
+			EnvironmentSelectionComboBox.Items.Clear();
+			trayEnvSelectorComboBox.Items.Clear();
+			EnvironmentSelectionComboBox.Items.Clear();
+			trayEnvSelectorComboBox.Items.Clear();
 			
-			if(File.Exists(settingsFile))
+			foreach(string envFile in Directory.GetFiles(InvokerSettingDirectory,"*.env.json"))
 			{
-				envSettingsMap.Clear();
-				EnvironmentSelectionComboBox.Items.Clear();
-				trayEnvSelectorComboBox.Items.Clear();
-				EnvironmentSelectionComboBox.Items.Clear();
-				trayEnvSelectorComboBox.Items.Clear();
-				
-				foreach(string envFile in Directory.GetFiles(InvokerSettingDirectory,"*.env.json"))
-				{
-					string baseFileName=Path.GetFileName(envFile);
-					string envAlias=baseFileName.Substring(0,baseFileName.IndexOf(".env.json"));
-					EnvironmentSelectionComboBox.Items.Add(envAlias);
-					trayEnvSelectorComboBox.Items.Add(envAlias);
-					envSettingsMap.Add(envAlias,InvokerSettings.getFromFile(envFile));
-				}
-				
-				
-				//Selecting the environment will apply the settings
-				if(EnvironmentSelectionComboBox.Items.Contains(envName))
-				{
-					EnvironmentSelectionComboBox.SelectedIndex=EnvironmentSelectionComboBox.Items.IndexOf(envName);
-				}
-				else
-				{
-					applySettings();
-				}
+				string baseFileName=Path.GetFileName(envFile);
+				string envAlias=baseFileName.Substring(0,baseFileName.IndexOf(".env.json"));
+				EnvironmentSelectionComboBox.Items.Add(envAlias);
+				trayEnvSelectorComboBox.Items.Add(envAlias);
+				envSettingsMap.Add(envAlias,InvokerSettings.getFromFile(envFile));
+			}
+			
+			
+			//Selecting the environment will apply the settings
+			if(EnvironmentSelectionComboBox.Items.Contains(envName))
+			{
+				EnvironmentSelectionComboBox.SelectedIndex=EnvironmentSelectionComboBox.Items.IndexOf(envName);
 			}
 			else
 			{
-				switch(MessageBox.Show("Settings json file "+settingsFile+" was not found. Do you want to create one?","<!>",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation))
-				{
-					case DialogResult.OK:
-					case DialogResult.Yes:
-						SaveSettingsButtonClick(null,null);
-						break;
-				}
+				applySettings();
 			}
+			
+			
 			EnvironmentCollectionChanged();
 		}
 		
@@ -287,9 +299,15 @@ namespace Invoker
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 			
-			if(Directory.Exists(InvokerSettingDirectory))
+			if(!Directory.Exists(InvokerSettingDirectory))
 			{
 				Directory.CreateDirectory(InvokerSettingDirectory);
+				
+				foreach(string envFile in Directory.GetFiles(assemblyLocation,"*.env.json"))
+				{
+					FileInfo srcFI=new FileInfo(envFile);
+					srcFI.CopyTo(InvokerSettingDirectory+"\\"+srcFI.Name,false);
+				}
 			}
 			
 			//commandButtons.AddRange(new Button[]{commandButton1,commandButton2,commandButton3,commandButton4,commandButton5,commandButton6,commandButton7,commandButton8,commandButton9,commandButton10,commandButton11,commandButton12,commandButton13,commandButton14,commandButton15,commandButton16,commandButton17,commandButton18,commandButton19,commandButton20});
@@ -431,7 +449,7 @@ namespace Invoker
 		
 		void SaveSettingsButtonClick(object sender, EventArgs e)
 		{
-			invokerSettings.saveToFile(settingsFile);
+			invokerSettings.saveToFile(userSettingsFile);
 		}
 		
 		void SaveEnvSettingsButtonClick(object sender, EventArgs e)
@@ -707,7 +725,7 @@ namespace Invoker
 		
 		void HideInvokerWindowButtonClick(object sender, EventArgs e)
 		{
-			toggleShowWindow();			
+			toggleShowWindow();
 		}
 	}
 }
