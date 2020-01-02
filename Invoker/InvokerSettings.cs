@@ -32,14 +32,34 @@ namespace Invoker
 		{
 		}
 		
+		public InvokerSettings(Dictionary<string,string> properties)
+		{
+			foreach(KeyValuePair<string,string>kvp in properties)
+			{
+				this.properties.Add(kvp.Key,kvp.Value);
+			}
+		}
+		
 		public static InvokerSettings getFromFile(string file)
 		{
-			return JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file));
+			InvokerSettings invokerSettings= JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file));
+			
+			if(invokerSettings.properties==null)
+			{
+				invokerSettings.properties=new Dictionary<string, string>();
+			}
+			
+			if(invokerSettings.invokes==null)
+			{
+				invokerSettings.invokes=new List<InvokeCommand>();
+			}
+			
+			return invokerSettings;
 		}
 		
 		public void saveToFile(string file)
 		{
 			File.WriteAllText(file,JsonConvert.SerializeObject(this));
-		}		
+		}
 	}
 }

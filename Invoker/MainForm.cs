@@ -25,15 +25,16 @@ namespace Invoker
 	public partial class MainForm : Form
 	{
 		static string InvokerSettingDirectory=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+"\\.invoker\\";
-		static string assemblyLocation=Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location);
-		static string originalSettingsFile=assemblyLocation+"\\"+"InvokerSettings.json";
+		static string assemblyLocation=Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location)+"\\";
+		static string originalSettingsFile=assemblyLocation+"InvokerSettings.json";
 		
-		static string userSettingsFile=InvokerSettingDirectory+"\\"+"InvokerSettings.json";
+		static string userSettingsFile=InvokerSettingDirectory+"InvokerSettings.json";
 		
 		InvokerSettings invokerSettings=null;
 		
 		Dictionary<string,InvokerSettings> envSettingsMap=new Dictionary<string, InvokerSettings>();
-		InvokerSettings currentEnvSettings;
+		InvokerSettings currentEnvSettings=new InvokerSettings();
+		
 		Dictionary<string, string> execProperties=new Dictionary<string, string>();
 
 		List<GlobalHotkey> customHotKeys=new List<GlobalHotkey>();
@@ -105,32 +106,42 @@ namespace Invoker
 			}
 			commandButtons.Clear();
 			
+			if((currentEnvSettings!=null) && (currentEnvSettings.invokes!=null))
+			{
+				foreach(InvokeCommand invoke in currentEnvSettings.invokes)
+				{
+					if(!commandsComboBox.Items.Contains(invoke.name))
+					{
+						enableInvoke(invoke,i);
+						
+						if(invoke.enableButton)
+						{
+							i++;
+						}
+					}
+				}
+				PropertiesComboBox.Items.AddRange(currentEnvSettings.properties.Keys.ToArray());
+			}
+			
 			if(invokerSettings.invokes!=null)
 			{
 				foreach(InvokeCommand invoke in invokerSettings.invokes)
 				{
 					enableInvoke(invoke,i);
 					
-					if(invoke.enableButton)
+					if(!commandsComboBox.Items.Contains(invoke.name))
 					{
-						i++;
+						enableInvoke(invoke,i);
+						
+						if(invoke.enableButton)
+						{
+							i++;
+						}
 					}
 				}
 			}
 			
-			if((currentEnvSettings!=null) && (currentEnvSettings.invokes!=null))
-			{
-				foreach(InvokeCommand invoke in currentEnvSettings.invokes)
-				{
-					enableInvoke(invoke,i);
-					
-					if(invoke.enableButton)
-					{
-						i++;
-					}
-				}
-				PropertiesComboBox.Items.AddRange(currentEnvSettings.properties.Keys.ToArray());
-			}
+			
 			
 			if(turnOnHotKeys)
 			{
@@ -165,9 +176,11 @@ namespace Invoker
 			
 			invokerSettings=File.Exists(userSettingsFile)?InvokerSettings.getFromFile(userSettingsFile):(File.Exists(originalSettingsFile)?InvokerSettings.getFromFile(originalSettingsFile):new InvokerSettings());
 			
+			currentEnvSettings=new InvokerSettings(invokerSettings.properties);
+			
 			execProperties.Clear();
 			execProperties.Add("_invoker_general_properties_file",new FileInfo(userSettingsFile).FullName);
-			execProperties.Add("_invoker_environment_settings_file",Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location)+"\\"+envName+".env.json");
+			execProperties.Add("_invoker_environment_settings_file",InvokerSettingDirectory+envName+".env.json");
 			execProperties.Add("_specialChar_newLine","\n");
 			execProperties.Add("_specialChar_backspace","\b");
 			execProperties.Add("_specialChar_escape",'\x1b'.ToString());
@@ -418,7 +431,7 @@ namespace Invoker
 					}
 					else
 					{
-						newEnvSettings=new InvokerSettings();
+						newEnvSettings=new InvokerSettings(currentEnvSettings.properties);
 						newEnvSettings.properties=invokerSettings.properties;
 						newEnvSettings.saveToFile(envFilePath);
 					}
@@ -471,7 +484,7 @@ namespace Invoker
 		
 		void AboutToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			MessageBox.Show("Invoker is launcher tool to work with multiple environments.\rFor queries contact manianvss@hotmail.com.","About");
+			MessageBox.Show("Invoker is a launcher tool to work with multiple environments.\rFor queries contact manianvss@hotmail.com.","About");
 		}
 		
 		bool hotKeysOn=false;
@@ -594,40 +607,57 @@ namespace Invoker
 			ToggleHotKeysButtonClick(sender,e);
 		}
 		
+		void waitForProcessExit(Process process)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			process.WaitForExit();
+			execProperties["exitCode"]=""+process.ExitCode;
+			Cursor.Current=Cursors.Default;
+		}
+		
 		void performInvoke(InvokeCommand invoke)
 		{
 			foreach(ExecDetails command in invoke.commands)
 			{
 				switch(command.type)
 				{
+					case "run":
+						Process process=((command.args!=null)&&!string.IsNullOrEmpty(command.args[0]))
+							?Process.Start(replaceProperties(command.path),replaceProperties(string.Join(" ",command.args)))
+							:Process.Start(replaceProperties(command.path));
+						
+						if(command.waitForExit)
+						{
+							waitForProcessExit(process);
+						}
+						break;
+						
 					case "exec":
-						Process cmd = new Process();
-						cmd.StartInfo.UseShellExecute=command.shell;
-						cmd.StartInfo.FileName = replaceProperties(command.path);
-						cmd.StartInfo.Arguments=replaceProperties(string.Join(" ",command.args));
-						cmd.StartInfo.CreateNoWindow=command.hideWindow;
+						process = new Process();
+						process.StartInfo.UseShellExecute=command.shell;
+						process.StartInfo.FileName = replaceProperties(command.path);
+						process.StartInfo.Arguments=replaceProperties(string.Join(" ",command.args));
+						process.StartInfo.CreateNoWindow=command.hideWindow;
 						
 						if(command.saveOutput)
 						{
-							cmd.StartInfo.RedirectStandardOutput=true;
-							cmd.StartInfo.RedirectStandardError=true;
-							cmd.StartInfo.UseShellExecute=false;
+							process.StartInfo.RedirectStandardOutput=true;
+							process.StartInfo.RedirectStandardError=true;
+							process.StartInfo.UseShellExecute=false;
 						}
 						
 						foreach(KeyValuePair<string,string> kvp in command.env)
 						{
-							cmd.StartInfo.EnvironmentVariables.Add(replaceProperties(kvp.Key),replaceProperties(kvp.Value));
+							process.StartInfo.EnvironmentVariables.Add(replaceProperties(kvp.Key),replaceProperties(kvp.Value));
 						}
 						
-						cmd.Start();
+						process.Start();
 						
 						if(command.saveOutput)
 						{
-							string output = cmd.StandardOutput.ReadToEnd();
-							string err = cmd.StandardError.ReadToEnd();
-							Cursor.Current = Cursors.WaitCursor;
-							cmd.WaitForExit();
-							Cursor.Current=Cursors.Default;
+							string output = process.StandardOutput.ReadToEnd();
+							string err = process.StandardError.ReadToEnd();
+							waitForProcessExit(process);
 							
 							if(string.IsNullOrEmpty(command.outputProperty))
 							{
@@ -640,9 +670,7 @@ namespace Invoker
 						{
 							if(command.waitForExit)
 							{
-								Cursor.Current = Cursors.WaitCursor;
-								cmd.WaitForExit();
-								Cursor.Current=Cursors.Default;
+								waitForProcessExit(process);
 							}
 						}
 						break;

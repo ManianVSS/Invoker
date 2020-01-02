@@ -14,7 +14,7 @@
 						<File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.dll" />
 						<File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.xml" />
 					</Component>
-					<Component Id="InvokerConfig" Guid="E869D354-A1E4-4CE9-9F69-219E7A9DABEC" DiskId="1" Win64="yes" NeverOverwrite="yes" Permanent="yes">
+					<Component Id="InvokerConfig" Guid="E869D354-A1E4-4CE9-9F69-219E7A9DABEC" DiskId="1" Win64="yes">
 						<File Source="$(var.Invoker.TargetDir)InvokerSettings.json" />
 					</Component>
 					<Component Id="Tools" Guid="B35F5316-1AF6-4386-9F32-6C8140BD2795" DiskId="1" Win64="yes">
