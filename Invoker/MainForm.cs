@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Property of Manian VSS
  * Copyright Manian VSS 2019
  * User: Manian VSS
@@ -355,15 +355,18 @@ namespace Invoker
 		{
 			if(EnvironmentSelectionComboBox.SelectedIndex!=-1)
 			{
-				if(envSettingsMap.ContainsKey(EnvironmentSelectionComboBox.Text))
+				string envName=EnvironmentSelectionComboBox.Text;
+				if(envSettingsMap.ContainsKey(envName))
 				{
-					currentEnvSettings=envSettingsMap[EnvironmentSelectionComboBox.Text];
+					currentEnvSettings=envSettingsMap[envName];
 					applySettings();
 					
 					if(!updatingEnvFromTray)
 					{
 						trayEnvSelectorComboBox.SelectedIndex=EnvironmentSelectionComboBox.SelectedIndex;
 					}
+					
+					execProperties["_invoker_environment_settings_file"]=InvokerSettingDirectory+envName+".env.json";
 				}
 			}
 		}
