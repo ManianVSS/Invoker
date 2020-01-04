@@ -13,6 +13,61 @@
 	},
 	"invokes": [
 		{
+			"name": "Toggle Invoker Window",
+			"description": "Toggle visibility of invoker window",
+			"hotkeyString": "CTRL+SHIFT+F1",
+			"enableButton": false,
+			"commands": [
+				{
+					"type": "toggleShowInvokerWindow"					
+				}
+			]
+		},
+		{
+			"name": "Toggle ClipBoard Capture",
+			"description": "Toggle clipboard capture",
+			"hotkeyString": "CTRL+SHIFT+B",
+			"enableButton": false,
+			"commands": [
+				{
+					"type": "toggleClipBoardCapture"					
+				}
+			]
+		},
+		{
+			"name": "Paste to clip ring",
+			"description": "Copy from clipboard to clip ring",
+			"hotkeyString": "CTRL+SHIFT+V",
+			"enableButton": false,
+			"commands": [
+				{
+					"type": "copyFromClipBoard"					
+				}
+			]
+		},
+		{
+			"name": "Copy next from clip ring",
+			"description": "Copy next from clip ring to clipboard",
+			"hotkeyString": "CTRL+SHIFT+C",
+			"enableButton": false,
+			"commands": [
+				{
+					"type": "copyNextToClipBoard"					
+				}
+			]
+		},
+		{
+			"name": "Clear clip ring",
+			"description": "Clears the clip ring",
+			"hotkeyString": "CTRL+SHIFT+Q",
+			"enableButton": false,
+			"commands": [
+				{
+					"type": "clearClipBoard"					
+				}
+			]
+		},
+		{
 			"name": "Run ipconfig",
 			"description": "Get IP of the workstation",
 			"hotkeyString": "CTRL+SHIFT+I",

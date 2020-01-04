@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClipboardNotificationForm.cs" />
     <Compile Include="DrawOnScreen.cs" />
     <Compile Include="ExecDetails.cs" />
     <Compile Include="HotKey.cs" />
@@ -101,6 +102,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="InvokerSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LICENSE">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -9,10 +9,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-
 using System.Runtime.CompilerServices;
 
 using System.Windows.Forms;
@@ -22,7 +23,7 @@ namespace Invoker
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
-	public partial class MainForm : Form
+	public partial class MainForm: ClipboardNotificationForm
 	{
 		static string InvokerSettingDirectory=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+"\\.invoker\\";
 		static string assemblyLocation=Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location)+"\\";
@@ -31,6 +32,7 @@ namespace Invoker
 		static string userSettingsFile=InvokerSettingDirectory+"InvokerSettings.json";
 		
 		InvokerSettings invokerSettings=null;
+		List<object> clipBoardQueue=new List<object>();
 		
 		Dictionary<string,InvokerSettings> envSettingsMap=new Dictionary<string, InvokerSettings>();
 		InvokerSettings currentEnvSettings=new InvokerSettings();
@@ -43,6 +45,51 @@ namespace Invoker
 		List<Button> commandButtons=new List<Button>();
 		Dictionary<Button,InvokeCommand> commandButtonInvokeDict=new Dictionary<Button, InvokeCommand>();
 		Dictionary<string,InvokeCommand> commandsDict=new Dictionary<string, InvokeCommand>();
+		
+		public MainForm()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+			
+			LoadProperties();
+			comoboBoxRefreshed(commandsComboBox);
+			comoboBoxRefreshed(PropertiesComboBox);
+		}
+		
+//		void MainFormFormClosed(object sender, FormClosedEventArgs e)
+//		{
+//			DisableClipBoardNotifications();
+//			//Application.Exit();
+//		}
+
+		protected override void WndProc(ref System.Windows.Forms.Message m)
+		{
+			const int WM_KEYDOWN=0x0312;
+			
+			switch (m.Msg)
+			{
+				case WM_KEYDOWN:
+					for(int i=0;i<customHotKeys.Count;i++)
+					{
+						if(hotKeyCommandDict.ContainsKey(customHotKeys[i]))
+						{
+							if (m.WParam.ToInt32() == customHotKeys[i].HotkeyID)
+							{
+								performInvoke(hotKeyCommandDict[customHotKeys[i]]);
+								break;
+							}
+						}
+					}
+					break;
+			}
+			base.WndProc(ref m);
+		}
 		
 		void enableInvoke(InvokeCommand invoke, int commandNumber)
 		{
@@ -78,8 +125,9 @@ namespace Invoker
 				string tooltip=(invoke.hotkey==null)?invoke.description:invoke.description+"\rHotkey: "+invoke.hotkey;
 				commandToolTips.SetToolTip(commandButton,tooltip);
 				commandButtonInvokeDict.Add(commandButton,invoke);
-				commandsDict.Add(invoke.name,invoke);
 			}
+			
+			commandsDict.Add(invoke.name,invoke);
 		}
 		
 		void applySettings()
@@ -141,17 +189,25 @@ namespace Invoker
 				}
 			}
 			
-			
-			
 			if(turnOnHotKeys)
 			{
 				enableHotkeys();
 			}
 		}
 		
-		
 		void LoadProperties(string envName="default")
-		{
+		{			
+			if(!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory,"*.env.json").Any()) )
+			{
+				Directory.CreateDirectory(InvokerSettingDirectory);
+				
+				foreach(string envFile in Directory.GetFiles(assemblyLocation,"*.env.json"))
+				{
+					FileInfo srcFI=new FileInfo(envFile);
+					srcFI.CopyTo(InvokerSettingDirectory+"\\"+srcFI.Name,false);
+				}
+			}
+			
 			if(!File.Exists(userSettingsFile))
 			{
 				if(File.Exists(originalSettingsFile))
@@ -160,17 +216,8 @@ namespace Invoker
 				}
 				else
 				{
-					MessageBox.Show("Settings file missing: "+originalSettingsFile+". Restore the file or repair application from control panel and try again.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-					
+					MessageBox.Show("Settings file missing: "+originalSettingsFile+". Restore the file or repair application from control panel and try again.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);					
 					Environment.Exit(-1);
-//					switch(MessageBox.Show("Settings json file "+originalSettingsFile+" was not found. Do you want to create one?","<!>",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation))
-//					{
-//						case DialogResult.OK:
-//						case DialogResult.Yes:
-//							new InvokerSettings().saveToFile(originalSettingsFile);
-//							File.Copy(originalSettingsFile, userSettingsFile);
-//							break;
-//					}
 				}
 			}
 			
@@ -301,54 +348,10 @@ namespace Invoker
 			}
 		}
 		
-		public MainForm()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
-			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
-			
-			if(!Directory.Exists(InvokerSettingDirectory))
-			{
-				Directory.CreateDirectory(InvokerSettingDirectory);
-				
-				foreach(string envFile in Directory.GetFiles(assemblyLocation,"*.env.json"))
-				{
-					FileInfo srcFI=new FileInfo(envFile);
-					srcFI.CopyTo(InvokerSettingDirectory+"\\"+srcFI.Name,false);
-				}
-			}
-			
-			//commandButtons.AddRange(new Button[]{commandButton1,commandButton2,commandButton3,commandButton4,commandButton5,commandButton6,commandButton7,commandButton8,commandButton9,commandButton10,commandButton11,commandButton12,commandButton13,commandButton14,commandButton15,commandButton16,commandButton17,commandButton18,commandButton19,commandButton20});
-			LoadProperties();
-			comoboBoxRefreshed(commandsComboBox);
-			comoboBoxRefreshed(PropertiesComboBox);
-		}
-
-		protected override void WndProc(ref Message m)
-		{
-			for(int i=0;i<customHotKeys.Count;i++)
-			{
-				if(hotKeyCommandDict.ContainsKey(customHotKeys[i]))
-				{
-					if (m.Msg == 0x0312 && m.WParam.ToInt32() == customHotKeys[i].HotkeyID)
-					{
-						performInvoke(hotKeyCommandDict[customHotKeys[i]]);
-						break;
-					}
-				}
-			}
-			
-			base.WndProc(ref m);
-		}
-		
 		void MainFormFormClosing(object sender, FormClosingEventArgs e)
 		{
 			disableHotKeys();
+			DisableClipBoardNotifications();
 		}
 		
 		void EnvironmentSelectionComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -371,7 +374,7 @@ namespace Invoker
 			}
 		}
 		
-		void ReloadSettings()
+		void reloadSettings()
 		{
 			string prevcommandstr=commandsComboBox.Text;
 			string prevpropertystr=PropertiesComboBox.Text;
@@ -383,7 +386,7 @@ namespace Invoker
 		
 		void ReloadSettingsButtonClick(object sender, EventArgs e)
 		{
-			ReloadSettings();
+			reloadSettings();
 		}
 		
 		bool MainWindowHidden = false;
@@ -440,7 +443,7 @@ namespace Invoker
 					}
 				}
 
-				ReloadSettings();
+				reloadSettings();
 			}
 		}
 		
@@ -517,7 +520,7 @@ namespace Invoker
 			{
 				if(!string.IsNullOrEmpty(PropertiesComboBox.Text))
 				{
-					propertyValueTextBox.Text=envSettingsMap[EnvironmentSelectionComboBox.Text].properties[PropertiesComboBox.Text];
+					propertyValueTextBox.Text=currentEnvSettings.properties[PropertiesComboBox.Text];
 				}
 			}
 		}
@@ -561,12 +564,48 @@ namespace Invoker
 //			}
 //		}
 		
+		void AutoSelectListBoxItem(ListBox lb)
+		{
+			if((lb.SelectedIndex==-1) && (lb.Items.Count>0))
+			{
+				lb.SelectedIndex=0;
+			}
+		}
+		
+//		void AutoSelectComboBoxItem(ComboBox comboBox)
+//		{
+//			if((comboBox.SelectedIndex==-1) && (comboBox.Items.Count>0))
+//			{
+//				if(comboBox.Items.Contains(comboBox.Text))
+//				{
+//					comboBox.SelectedIndex=comboBox.Items.IndexOf(comboBox.Text);
+//				}
+//				else
+//				{
+//					comboBox.SelectedIndex=0;
+//				}
+//			}
+//		}
+		
+		void SelectNextListBoxItem(ListBox listBox)
+		{
+			if(listBox.Items.Count>0)
+			{
+				listBox.SelectedIndex= (listBox.SelectedIndex+1)%listBox.Items.Count;
+			}
+		}
+		
+		void SelectNextComboBoxItem(ComboBox comboBox)
+		{
+			if(comboBox.Items.Count>0)
+			{
+				comboBox.SelectedIndex= (comboBox.SelectedIndex+1)%comboBox.Items.Count;
+			}
+		}
+		
 		void NextEnvToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			if(EnvironmentSelectionComboBox.Items.Count>0)
-			{
-				EnvironmentSelectionComboBox.SelectedIndex=(EnvironmentSelectionComboBox.SelectedIndex+1)%EnvironmentSelectionComboBox.Items.Count;
-			}
+			SelectNextComboBoxItem(EnvironmentSelectionComboBox);
 		}
 		
 		void PrevEnvironmentToolStripMenuItemClick(object sender, EventArgs e)
@@ -586,7 +625,6 @@ namespace Invoker
 		{
 			Application.Exit();
 		}
-		
 		
 		void EnvironmentCollectionChanged()
 		{
@@ -679,12 +717,28 @@ namespace Invoker
 						break;
 						
 					case "reloadSettings":
-						ReloadSettings();
+						reloadSettings();
 						break;
 						
 					case "toggleShowInvokerWindow":
 						toggleShowWindow();
 						break;
+						
+					case "toggleClipBoardCapture":
+						ToggleClipBoardCapture();
+						break;
+						
+					case "copyNextToClipBoard":
+						copyNextToClipBoard();
+						break;
+						
+					case "copyFromClipBoard":
+						copyFromClipBoard();
+						break;
+						
+					case "clearClipBoard":
+						clearClipBoard();
+						break;	
 						
 					default:
 						MessageBox.Show(replaceProperties(command.comments),"Info",MessageBoxButtons.OK,MessageBoxIcon.Information);
@@ -757,6 +811,261 @@ namespace Invoker
 		void HideInvokerWindowButtonClick(object sender, EventArgs e)
 		{
 			toggleShowWindow();
+		}
+		
+		void processClipBoard(Stream stream)
+		{
+			clipBoardQueue.Add(stream);
+			ClipboardListBox.Items.Add("Audio: "+stream.Length);
+		}
+		
+		void processClipBoard(string textData)
+		{
+			if(!string.IsNullOrEmpty(textData))
+			{
+				clipBoardQueue.Add(textData);
+				ClipboardListBox.Items.Add("Text: "+textData);
+			}
+		}
+		
+		void processClipBoard(Image image)
+		{
+			clipBoardQueue.Add(image);
+			ClipboardListBox.Items.Add("Image: "+image.Size);
+		}
+		
+		void processClipBoard(StringCollection fileList)
+		{
+			clipBoardQueue.Add(fileList);
+			ClipboardListBox.Items.Add("Files: "+fileList.Count);
+		}
+		
+		void processClipBoard(IDataObject dataObject)
+		{
+			clipBoardQueue.Add(dataObject);
+			ClipboardListBox.Items.Add("Data: "+dataObject);
+		}
+		
+		string prevStr=null;
+		void MainFormClipboardChangedToAudioStream(object sender, ClipboardChangedAudioStreamEventArgs e)
+		{
+			prevStr=null;
+			processClipBoard(e.audioStream);
+		}
+		
+		void MainFormClipboardChangedToData(object sender, ClipboardChangedDataEventArgs e)
+		{
+			prevStr=null;
+			processClipBoard(e.DataObject);
+		}
+		
+		void MainFormClipboardChangedToFileList(object sender, ClipboardChangedFileListEventArgs e)
+		{
+			prevStr=null;
+			processClipBoard(e.fileList);
+		}
+		
+		void MainFormClipboardChangedToImage(object sender, ClipboardChangedImageEventArgs e)
+		{
+			prevStr=null;
+			processClipBoard(e.image);
+		}
+		
+		void MainFormClipboardChangedToText(object sender, ClipboardChangedTextEventArgs e)
+		{
+			if(!e.textData.Equals(prevStr))
+			{
+				prevStr=e.textData;
+				processClipBoard(e.textData);
+			}
+		}
+		
+		void ClipboardListBoxSelectedIndexChanged(object sender, EventArgs e)
+		{
+			if(ClipboardListBox.SelectedIndex!=-1)
+			{
+				object data=clipBoardQueue[ClipboardListBox.SelectedIndex];
+				
+				if(data is string)
+				{
+					ClipboardViewerTabControl.SelectedTab=CBV_TextTab;
+//					ClipViewRTB.Clear();
+					ClipViewRTB.Text=(string)data;
+				}
+				else if(data is Image)
+				{
+					ClipboardViewerTabControl.SelectedTab=CBV_ImageTab;
+					ClipViewPictureBox.Image=(Image)data;
+				}
+				else if(data is StringCollection)
+				{
+					ClipboardViewerTabControl.SelectedTab=CBV_TextTab;
+					ClipViewRTB.Clear();
+					
+					foreach(String str in (StringCollection)data)
+					{
+						ClipViewRTB.AppendText(str+"\n");
+					}
+				}
+				else
+				{
+					ClipboardViewerTabControl.SelectedTab=CBV_DataTab;
+				}
+				
+				ClipboardListBox.Focus();
+			}
+		}
+		
+		public void ToggleClipBoardCapture()
+		{
+			ToggleClipBoardNotifications();
+			string captureControlText=(clipboardNotificationsEnabled?"Disable":"Enable")+" Clipboard Capture";
+			clipboardCaptureToolStripMenuItem.Text=captureControlText;
+			EnableClipboardCaptureButton.Text=captureControlText;
+		}
+		
+		void EnableClipboardCaptureButtonClick(object sender, EventArgs e)
+		{
+			ToggleClipBoardCapture();
+		}
+		
+		void ClipboardCaptureToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			ToggleClipBoardCapture();
+		}
+		
+		void copyNextToClipBoard()
+		{
+			AutoSelectListBoxItem(ClipboardListBox);
+			copyToClipBoard();
+			SelectNextListBoxItem(ClipboardListBox);
+		}
+		
+		void copyToClipBoard()
+		{
+			int selectedIndex=ClipboardListBox.SelectedIndex;
+			
+			if(selectedIndex!=-1)
+			{
+				bool enableBack=DisableClipBoardNotifications();
+				
+				object data=clipBoardQueue[selectedIndex];
+				
+				if(data is string)
+				{
+					string strToSet=(string)data;
+					if(!string.IsNullOrEmpty(strToSet))
+					{
+						Clipboard.SetText(strToSet);
+					}
+				}
+				else if(data is Image)
+				{
+					Clipboard.SetImage((Image)data);
+				}
+				else if(data is StringCollection)
+				{
+					Clipboard.SetFileDropList((StringCollection)data);
+				}
+				else if(data is Stream)
+				{
+					Clipboard.SetAudio((Stream)data);
+				}
+				else
+				{
+					Clipboard.SetDataObject((IDataObject)data);
+				}
+				
+				if(enableBack)
+				{
+					EnableClipBoardNotifications();
+				}
+			}
+		}
+		
+		void CopyToClipBoardButtonClick(object sender, EventArgs e)
+		{
+			copyToClipBoard();
+		}
+		
+		void ClipboardListBoxMouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			copyToClipBoard();
+		}
+		
+		void copyFromClipBoard()
+		{
+			if(Clipboard.ContainsText())
+			{
+				string text=Clipboard.GetText();
+				processClipBoard(text);
+			}
+			else if(Clipboard.ContainsFileDropList())
+			{
+				StringCollection fileList=Clipboard.GetFileDropList();
+				processClipBoard(fileList);
+			}
+			else if(Clipboard.ContainsImage())
+			{
+				Image image=Clipboard.GetImage();
+				processClipBoard(image);
+			}
+			else if(Clipboard.ContainsAudio())
+			{
+				Stream audioStream=Clipboard.GetAudioStream();
+				processClipBoard(audioStream);
+			}
+			else
+			{
+				IDataObject dataObject=Clipboard.GetDataObject();
+				processClipBoard(dataObject);
+			}
+		}
+		
+		void ClipboardListBoxKeyDown(object sender, KeyEventArgs e)
+		{
+			int selectedIndex=ClipboardListBox.SelectedIndex;
+			
+			switch(e.KeyCode)
+			{
+				case Keys.Delete:
+					if(selectedIndex!=-1)
+					{
+						clipBoardQueue.RemoveAt(selectedIndex);
+						ClipboardListBox.Items.RemoveAt(selectedIndex);
+					}
+					break;
+					
+				case Keys.V:
+					if(e.Control)
+					{
+						copyFromClipBoard();
+					}
+					break;
+					
+				case Keys.C:
+					if(e.Control)
+					{
+						copyToClipBoard();
+					}
+					break;
+			}
+		}
+		
+		void clearClipBoard()
+		{
+			ClipboardListBox.Items.Clear();
+			clipBoardQueue.Clear();
+		}
+		
+		void ClearClipBoardButtonClick(object sender, EventArgs e)
+		{
+			clearClipBoard();
+		}
+		
+		void PasteFromClipBoardButtonClick(object sender, EventArgs e)
+		{
+			copyFromClipBoard();
 		}
 	}
 }

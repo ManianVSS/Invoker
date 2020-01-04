@@ -32,8 +32,8 @@
     <WixExtension Include="WixUIExtension.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Files.wxs" />    
-    <Compile Include="Setup.wxs" />    
+    <Compile Include="Files.wxs" />
+    <Compile Include="Setup.wxs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="license.rtf" />
@@ -49,9 +49,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
-  
-  <Target Name="BeforeBuild">	 
-	  <!--HeatDirectory 
+  <Target Name="BeforeBuild">
+    <!--HeatDirectory 
 
       OutputFile="$(ProjectDir)\DynamicFiles.wxs" 
 

@@ -52,6 +52,21 @@ namespace Invoker
 		private System.Windows.Forms.FlowLayoutPanel commandsFlowLayoutPanel;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.Button HideInvokerWindowButton;
+		private System.Windows.Forms.TabPage ClipboardTab;
+		private System.Windows.Forms.SplitContainer SC_CipboardViewSplitter;
+		private System.Windows.Forms.ListBox ClipboardListBox;
+		private System.Windows.Forms.TabControl ClipboardViewerTabControl;
+		private System.Windows.Forms.TabPage CBV_TextTab;
+		private System.Windows.Forms.TabPage CBV_ImageTab;
+		private System.Windows.Forms.TabPage CBV_DataTab;
+		private System.Windows.Forms.RichTextBox ClipViewRTB;
+		private System.Windows.Forms.PictureBox ClipViewPictureBox;
+		private System.Windows.Forms.ToolStripMenuItem clipboardCaptureToolStripMenuItem;
+		private System.Windows.Forms.SplitContainer SC_ClipBoardViewerMain;
+		private System.Windows.Forms.Button EnableClipboardCaptureButton;
+		private System.Windows.Forms.Button CopyToClipBoardButton;
+		private System.Windows.Forms.Button ClearClipBoardButton;
+		private System.Windows.Forms.Button PasteFromClipBoardButton;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -81,6 +96,7 @@ namespace Invoker
 			this.trayContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.TrayToggleHotKeyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toggleShowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.clipboardCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.trayEnvSelectorComboBox = new System.Windows.Forms.ToolStripComboBox();
 			this.Invoker_MainMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -111,6 +127,20 @@ namespace Invoker
 			this.label_Properties = new System.Windows.Forms.Label();
 			this.propertyValueTextBox = new System.Windows.Forms.TextBox();
 			this.commandsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+			this.ClipboardTab = new System.Windows.Forms.TabPage();
+			this.SC_ClipBoardViewerMain = new System.Windows.Forms.SplitContainer();
+			this.PasteFromClipBoardButton = new System.Windows.Forms.Button();
+			this.ClearClipBoardButton = new System.Windows.Forms.Button();
+			this.CopyToClipBoardButton = new System.Windows.Forms.Button();
+			this.EnableClipboardCaptureButton = new System.Windows.Forms.Button();
+			this.SC_CipboardViewSplitter = new System.Windows.Forms.SplitContainer();
+			this.ClipboardListBox = new System.Windows.Forms.ListBox();
+			this.ClipboardViewerTabControl = new System.Windows.Forms.TabControl();
+			this.CBV_TextTab = new System.Windows.Forms.TabPage();
+			this.ClipViewRTB = new System.Windows.Forms.RichTextBox();
+			this.CBV_ImageTab = new System.Windows.Forms.TabPage();
+			this.ClipViewPictureBox = new System.Windows.Forms.PictureBox();
+			this.CBV_DataTab = new System.Windows.Forms.TabPage();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.commandToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.trayContextMenuStrip.SuspendLayout();
@@ -127,6 +157,19 @@ namespace Invoker
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.GroupBox_Tools.SuspendLayout();
+			this.ClipboardTab.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.SC_ClipBoardViewerMain)).BeginInit();
+			this.SC_ClipBoardViewerMain.Panel1.SuspendLayout();
+			this.SC_ClipBoardViewerMain.Panel2.SuspendLayout();
+			this.SC_ClipBoardViewerMain.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.SC_CipboardViewSplitter)).BeginInit();
+			this.SC_CipboardViewSplitter.Panel1.SuspendLayout();
+			this.SC_CipboardViewSplitter.Panel2.SuspendLayout();
+			this.SC_CipboardViewSplitter.SuspendLayout();
+			this.ClipboardViewerTabControl.SuspendLayout();
+			this.CBV_TextTab.SuspendLayout();
+			this.CBV_ImageTab.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ClipViewPictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// StatusStrip_InvokerMain
@@ -151,29 +194,37 @@ namespace Invoker
 			this.trayContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.TrayToggleHotKeyMenuItem,
 			this.toggleShowToolStripMenuItem,
+			this.clipboardCaptureToolStripMenuItem,
 			this.exitToolStripMenuItem,
 			this.trayEnvSelectorComboBox});
 			this.trayContextMenuStrip.Name = "trayContextMenuStrip";
-			this.trayContextMenuStrip.Size = new System.Drawing.Size(182, 97);
+			this.trayContextMenuStrip.Size = new System.Drawing.Size(210, 119);
 			// 
 			// TrayToggleHotKeyMenuItem
 			// 
 			this.TrayToggleHotKeyMenuItem.Name = "TrayToggleHotKeyMenuItem";
-			this.TrayToggleHotKeyMenuItem.Size = new System.Drawing.Size(181, 22);
+			this.TrayToggleHotKeyMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.TrayToggleHotKeyMenuItem.Text = "Enable HotKeys";
 			this.TrayToggleHotKeyMenuItem.Click += new System.EventHandler(this.ToggleHotKeysButtonClick);
 			// 
 			// toggleShowToolStripMenuItem
 			// 
 			this.toggleShowToolStripMenuItem.Name = "toggleShowToolStripMenuItem";
-			this.toggleShowToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+			this.toggleShowToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.toggleShowToolStripMenuItem.Text = "Toggle Show";
 			this.toggleShowToolStripMenuItem.Click += new System.EventHandler(this.ToggleShowToolStripMenuItemClick);
+			// 
+			// clipboardCaptureToolStripMenuItem
+			// 
+			this.clipboardCaptureToolStripMenuItem.Name = "clipboardCaptureToolStripMenuItem";
+			this.clipboardCaptureToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+			this.clipboardCaptureToolStripMenuItem.Text = "Enable Clipboard Capture";
+			this.clipboardCaptureToolStripMenuItem.Click += new System.EventHandler(this.ClipboardCaptureToolStripMenuItemClick);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItemClick);
 			// 
@@ -204,7 +255,7 @@ namespace Invoker
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
 			this.aboutToolStripMenuItem.Text = "About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItemClick);
 			// 
@@ -220,6 +271,7 @@ namespace Invoker
 			// TabControl_InvokerMain
 			// 
 			this.TabControl_InvokerMain.Controls.Add(this.MainTab);
+			this.TabControl_InvokerMain.Controls.Add(this.ClipboardTab);
 			this.TabControl_InvokerMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.TabControl_InvokerMain.Location = new System.Drawing.Point(0, 0);
 			this.TabControl_InvokerMain.Name = "TabControl_InvokerMain";
@@ -261,7 +313,7 @@ namespace Invoker
 			// 
 			this.SC_DashBoardMain.Panel2.Controls.Add(this.splitContainer1);
 			this.SC_DashBoardMain.Size = new System.Drawing.Size(687, 417);
-			this.SC_DashBoardMain.SplitterDistance = 77;
+			this.SC_DashBoardMain.SplitterDistance = 91;
 			this.SC_DashBoardMain.TabIndex = 0;
 			// 
 			// HideInvokerWindowButton
@@ -369,8 +421,8 @@ namespace Invoker
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.commandsFlowLayoutPanel);
-			this.splitContainer1.Size = new System.Drawing.Size(687, 336);
-			this.splitContainer1.SplitterDistance = 156;
+			this.splitContainer1.Size = new System.Drawing.Size(687, 322);
+			this.splitContainer1.SplitterDistance = 148;
 			this.splitContainer1.TabIndex = 46;
 			// 
 			// GroupBox_Tools
@@ -479,8 +531,174 @@ namespace Invoker
 			this.commandsFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.commandsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
 			this.commandsFlowLayoutPanel.Name = "commandsFlowLayoutPanel";
-			this.commandsFlowLayoutPanel.Size = new System.Drawing.Size(687, 176);
+			this.commandsFlowLayoutPanel.Size = new System.Drawing.Size(687, 170);
 			this.commandsFlowLayoutPanel.TabIndex = 45;
+			// 
+			// ClipboardTab
+			// 
+			this.ClipboardTab.Controls.Add(this.SC_ClipBoardViewerMain);
+			this.ClipboardTab.Location = new System.Drawing.Point(4, 22);
+			this.ClipboardTab.Name = "ClipboardTab";
+			this.ClipboardTab.Padding = new System.Windows.Forms.Padding(3);
+			this.ClipboardTab.Size = new System.Drawing.Size(693, 423);
+			this.ClipboardTab.TabIndex = 1;
+			this.ClipboardTab.Text = "Clipboard++";
+			this.ClipboardTab.UseVisualStyleBackColor = true;
+			// 
+			// SC_ClipBoardViewerMain
+			// 
+			this.SC_ClipBoardViewerMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.SC_ClipBoardViewerMain.Location = new System.Drawing.Point(3, 3);
+			this.SC_ClipBoardViewerMain.Name = "SC_ClipBoardViewerMain";
+			this.SC_ClipBoardViewerMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// SC_ClipBoardViewerMain.Panel1
+			// 
+			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.PasteFromClipBoardButton);
+			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.ClearClipBoardButton);
+			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.CopyToClipBoardButton);
+			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.EnableClipboardCaptureButton);
+			// 
+			// SC_ClipBoardViewerMain.Panel2
+			// 
+			this.SC_ClipBoardViewerMain.Panel2.Controls.Add(this.SC_CipboardViewSplitter);
+			this.SC_ClipBoardViewerMain.Size = new System.Drawing.Size(687, 417);
+			this.SC_ClipBoardViewerMain.SplitterDistance = 34;
+			this.SC_ClipBoardViewerMain.TabIndex = 2;
+			// 
+			// PasteFromClipBoardButton
+			// 
+			this.PasteFromClipBoardButton.Location = new System.Drawing.Point(253, 3);
+			this.PasteFromClipBoardButton.Name = "PasteFromClipBoardButton";
+			this.PasteFromClipBoardButton.Size = new System.Drawing.Size(71, 23);
+			this.PasteFromClipBoardButton.TabIndex = 11;
+			this.PasteFromClipBoardButton.Text = "Paste";
+			this.PasteFromClipBoardButton.UseVisualStyleBackColor = true;
+			this.PasteFromClipBoardButton.Click += new System.EventHandler(this.PasteFromClipBoardButtonClick);
+			// 
+			// ClearClipBoardButton
+			// 
+			this.ClearClipBoardButton.Location = new System.Drawing.Point(330, 3);
+			this.ClearClipBoardButton.Name = "ClearClipBoardButton";
+			this.ClearClipBoardButton.Size = new System.Drawing.Size(71, 23);
+			this.ClearClipBoardButton.TabIndex = 10;
+			this.ClearClipBoardButton.Text = "Clear";
+			this.ClearClipBoardButton.UseVisualStyleBackColor = true;
+			this.ClearClipBoardButton.Click += new System.EventHandler(this.ClearClipBoardButtonClick);
+			// 
+			// CopyToClipBoardButton
+			// 
+			this.CopyToClipBoardButton.Location = new System.Drawing.Point(176, 3);
+			this.CopyToClipBoardButton.Name = "CopyToClipBoardButton";
+			this.CopyToClipBoardButton.Size = new System.Drawing.Size(71, 23);
+			this.CopyToClipBoardButton.TabIndex = 9;
+			this.CopyToClipBoardButton.Text = "Copy";
+			this.CopyToClipBoardButton.UseVisualStyleBackColor = true;
+			this.CopyToClipBoardButton.Click += new System.EventHandler(this.CopyToClipBoardButtonClick);
+			// 
+			// EnableClipboardCaptureButton
+			// 
+			this.EnableClipboardCaptureButton.Location = new System.Drawing.Point(5, 3);
+			this.EnableClipboardCaptureButton.Name = "EnableClipboardCaptureButton";
+			this.EnableClipboardCaptureButton.Size = new System.Drawing.Size(165, 23);
+			this.EnableClipboardCaptureButton.TabIndex = 8;
+			this.EnableClipboardCaptureButton.Text = "Enable ClipBoard Capture";
+			this.EnableClipboardCaptureButton.UseVisualStyleBackColor = true;
+			this.EnableClipboardCaptureButton.Click += new System.EventHandler(this.EnableClipboardCaptureButtonClick);
+			// 
+			// SC_CipboardViewSplitter
+			// 
+			this.SC_CipboardViewSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.SC_CipboardViewSplitter.Location = new System.Drawing.Point(0, 0);
+			this.SC_CipboardViewSplitter.Name = "SC_CipboardViewSplitter";
+			// 
+			// SC_CipboardViewSplitter.Panel1
+			// 
+			this.SC_CipboardViewSplitter.Panel1.Controls.Add(this.ClipboardListBox);
+			// 
+			// SC_CipboardViewSplitter.Panel2
+			// 
+			this.SC_CipboardViewSplitter.Panel2.Controls.Add(this.ClipboardViewerTabControl);
+			this.SC_CipboardViewSplitter.Size = new System.Drawing.Size(687, 379);
+			this.SC_CipboardViewSplitter.SplitterDistance = 229;
+			this.SC_CipboardViewSplitter.TabIndex = 1;
+			// 
+			// ClipboardListBox
+			// 
+			this.ClipboardListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ClipboardListBox.FormattingEnabled = true;
+			this.ClipboardListBox.HorizontalScrollbar = true;
+			this.ClipboardListBox.Location = new System.Drawing.Point(0, 0);
+			this.ClipboardListBox.Name = "ClipboardListBox";
+			this.ClipboardListBox.Size = new System.Drawing.Size(229, 379);
+			this.ClipboardListBox.TabIndex = 0;
+			this.ClipboardListBox.SelectedIndexChanged += new System.EventHandler(this.ClipboardListBoxSelectedIndexChanged);
+			this.ClipboardListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ClipboardListBoxKeyDown);
+			this.ClipboardListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ClipboardListBoxMouseDoubleClick);
+			// 
+			// ClipboardViewerTabControl
+			// 
+			this.ClipboardViewerTabControl.Controls.Add(this.CBV_TextTab);
+			this.ClipboardViewerTabControl.Controls.Add(this.CBV_ImageTab);
+			this.ClipboardViewerTabControl.Controls.Add(this.CBV_DataTab);
+			this.ClipboardViewerTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ClipboardViewerTabControl.Location = new System.Drawing.Point(0, 0);
+			this.ClipboardViewerTabControl.Name = "ClipboardViewerTabControl";
+			this.ClipboardViewerTabControl.SelectedIndex = 0;
+			this.ClipboardViewerTabControl.Size = new System.Drawing.Size(454, 379);
+			this.ClipboardViewerTabControl.TabIndex = 0;
+			// 
+			// CBV_TextTab
+			// 
+			this.CBV_TextTab.Controls.Add(this.ClipViewRTB);
+			this.CBV_TextTab.Location = new System.Drawing.Point(4, 22);
+			this.CBV_TextTab.Name = "CBV_TextTab";
+			this.CBV_TextTab.Padding = new System.Windows.Forms.Padding(3);
+			this.CBV_TextTab.Size = new System.Drawing.Size(446, 353);
+			this.CBV_TextTab.TabIndex = 0;
+			this.CBV_TextTab.Text = "Text";
+			this.CBV_TextTab.UseVisualStyleBackColor = true;
+			// 
+			// ClipViewRTB
+			// 
+			this.ClipViewRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ClipViewRTB.Location = new System.Drawing.Point(3, 3);
+			this.ClipViewRTB.Name = "ClipViewRTB";
+			this.ClipViewRTB.ReadOnly = true;
+			this.ClipViewRTB.Size = new System.Drawing.Size(440, 347);
+			this.ClipViewRTB.TabIndex = 0;
+			this.ClipViewRTB.Text = "";
+			// 
+			// CBV_ImageTab
+			// 
+			this.CBV_ImageTab.Controls.Add(this.ClipViewPictureBox);
+			this.CBV_ImageTab.Location = new System.Drawing.Point(4, 22);
+			this.CBV_ImageTab.Name = "CBV_ImageTab";
+			this.CBV_ImageTab.Padding = new System.Windows.Forms.Padding(3);
+			this.CBV_ImageTab.Size = new System.Drawing.Size(446, 353);
+			this.CBV_ImageTab.TabIndex = 1;
+			this.CBV_ImageTab.Text = "Image";
+			this.CBV_ImageTab.UseVisualStyleBackColor = true;
+			// 
+			// ClipViewPictureBox
+			// 
+			this.ClipViewPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ClipViewPictureBox.Location = new System.Drawing.Point(3, 3);
+			this.ClipViewPictureBox.Name = "ClipViewPictureBox";
+			this.ClipViewPictureBox.Size = new System.Drawing.Size(440, 347);
+			this.ClipViewPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.ClipViewPictureBox.TabIndex = 0;
+			this.ClipViewPictureBox.TabStop = false;
+			// 
+			// CBV_DataTab
+			// 
+			this.CBV_DataTab.Location = new System.Drawing.Point(4, 22);
+			this.CBV_DataTab.Name = "CBV_DataTab";
+			this.CBV_DataTab.Padding = new System.Windows.Forms.Padding(3);
+			this.CBV_DataTab.Size = new System.Drawing.Size(446, 353);
+			this.CBV_DataTab.TabIndex = 2;
+			this.CBV_DataTab.Text = "Data";
+			this.CBV_DataTab.UseVisualStyleBackColor = true;
 			// 
 			// propertyGrid1
 			// 
@@ -502,6 +720,12 @@ namespace Invoker
 			this.MainMenuStrip = this.Invoker_MainMenuStrip;
 			this.Name = "MainForm";
 			this.Text = "Invoker";
+			this.ClipboardChangedToText += new System.EventHandler<Invoker.ClipboardChangedTextEventArgs>(this.MainFormClipboardChangedToText);
+			this.ClipboardChangedToImage += new System.EventHandler<Invoker.ClipboardChangedImageEventArgs>(this.MainFormClipboardChangedToImage);
+			this.ClipboardChangedToFileList += new System.EventHandler<Invoker.ClipboardChangedFileListEventArgs>(this.MainFormClipboardChangedToFileList);
+			this.ClipboardChangedToAudioStream += new System.EventHandler<Invoker.ClipboardChangedAudioStreamEventArgs>(this.MainFormClipboardChangedToAudioStream);
+			this.ClipboardChangedToData += new System.EventHandler<Invoker.ClipboardChangedDataEventArgs>(this.MainFormClipboardChangedToData);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
 			this.trayContextMenuStrip.ResumeLayout(false);
 			this.Invoker_MainMenuStrip.ResumeLayout(false);
 			this.Invoker_MainMenuStrip.PerformLayout();
@@ -518,6 +742,20 @@ namespace Invoker
 			this.splitContainer1.ResumeLayout(false);
 			this.GroupBox_Tools.ResumeLayout(false);
 			this.GroupBox_Tools.PerformLayout();
+			this.ClipboardTab.ResumeLayout(false);
+			this.SC_ClipBoardViewerMain.Panel1.ResumeLayout(false);
+			this.SC_ClipBoardViewerMain.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.SC_ClipBoardViewerMain)).EndInit();
+			this.SC_ClipBoardViewerMain.ResumeLayout(false);
+			this.SC_CipboardViewSplitter.Panel1.ResumeLayout(false);
+			this.SC_CipboardViewSplitter.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.SC_CipboardViewSplitter)).EndInit();
+			this.SC_CipboardViewSplitter.ResumeLayout(false);
+			this.ClipboardViewerTabControl.ResumeLayout(false);
+			this.CBV_TextTab.ResumeLayout(false);
+			this.CBV_ImageTab.ResumeLayout(false);
+			this.CBV_ImageTab.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ClipViewPictureBox)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
