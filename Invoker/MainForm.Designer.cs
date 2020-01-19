@@ -67,6 +67,8 @@ namespace Invoker
 		private System.Windows.Forms.Button CopyToClipBoardButton;
 		private System.Windows.Forms.Button ClearClipBoardButton;
 		private System.Windows.Forms.Button PasteFromClipBoardButton;
+		private System.Windows.Forms.Button ExportClipBoardButton;
+		private System.Windows.Forms.FolderBrowserDialog ExportClipboardFolderBrowserDialog;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -129,6 +131,7 @@ namespace Invoker
 			this.commandsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
 			this.ClipboardTab = new System.Windows.Forms.TabPage();
 			this.SC_ClipBoardViewerMain = new System.Windows.Forms.SplitContainer();
+			this.ExportClipBoardButton = new System.Windows.Forms.Button();
 			this.PasteFromClipBoardButton = new System.Windows.Forms.Button();
 			this.ClearClipBoardButton = new System.Windows.Forms.Button();
 			this.CopyToClipBoardButton = new System.Windows.Forms.Button();
@@ -143,6 +146,7 @@ namespace Invoker
 			this.CBV_DataTab = new System.Windows.Forms.TabPage();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.commandToolTips = new System.Windows.Forms.ToolTip(this.components);
+			this.ExportClipboardFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.trayContextMenuStrip.SuspendLayout();
 			this.Invoker_MainMenuStrip.SuspendLayout();
 			this.panel1.SuspendLayout();
@@ -554,6 +558,7 @@ namespace Invoker
 			// 
 			// SC_ClipBoardViewerMain.Panel1
 			// 
+			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.ExportClipBoardButton);
 			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.PasteFromClipBoardButton);
 			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.ClearClipBoardButton);
 			this.SC_ClipBoardViewerMain.Panel1.Controls.Add(this.CopyToClipBoardButton);
@@ -565,6 +570,16 @@ namespace Invoker
 			this.SC_ClipBoardViewerMain.Size = new System.Drawing.Size(687, 417);
 			this.SC_ClipBoardViewerMain.SplitterDistance = 34;
 			this.SC_ClipBoardViewerMain.TabIndex = 2;
+			// 
+			// ExportClipBoardButton
+			// 
+			this.ExportClipBoardButton.Location = new System.Drawing.Point(407, 3);
+			this.ExportClipBoardButton.Name = "ExportClipBoardButton";
+			this.ExportClipBoardButton.Size = new System.Drawing.Size(71, 23);
+			this.ExportClipBoardButton.TabIndex = 12;
+			this.ExportClipBoardButton.Text = "Export";
+			this.ExportClipBoardButton.UseVisualStyleBackColor = true;
+			this.ExportClipBoardButton.Click += new System.EventHandler(this.ExportClipBoardButtonClick);
 			// 
 			// PasteFromClipBoardButton
 			// 

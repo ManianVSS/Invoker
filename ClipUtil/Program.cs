@@ -12,10 +12,11 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace ClipUtil
 {
-	class Program
+	internal sealed class Program
 	{
 		public static void printUsage(bool error)
 		{
@@ -30,6 +31,26 @@ namespace ClipUtil
 				Console.WriteLine(usage);
 			}
 			
+		}
+		
+		public static void setClipBoardText(String text, int copyRetryMax=5)
+		{
+			int currentTry=0;
+			
+			while(currentTry<copyRetryMax)
+			{
+				try
+				{
+					Clipboard.Clear();
+					Clipboard.SetText(text);
+					break;
+				}
+				catch(Exception e)
+				{
+					currentTry++;
+					Thread.Sleep(1000);
+				}
+			}
 		}
 		
 		[STAThread]
@@ -50,12 +71,12 @@ namespace ClipUtil
 					
 					if(args.Length>1)
 					{
-						Clipboard.SetText(args[1]);
+						setClipBoardText(args[1]);
 					}
 					
 					break;
 					
-				case "CopyFileToClipBoard":					
+				case "CopyFileToClipBoard":
 					var stc = new System.Collections.Specialized.StringCollection();
 					
 					for(int i=1;i<args.Length;i++)
@@ -67,7 +88,7 @@ namespace ClipUtil
 					break;
 					
 				case "CopyFileTextToClipBoard":
-					Clipboard.SetText(File.ReadAllText(args[1]));
+					setClipBoardText(File.ReadAllText(args[1]));
 					break;
 					
 				case "CopyInputToClipBoard":
@@ -76,11 +97,11 @@ namespace ClipUtil
 					using (StreamReader sr = new StreamReader(Console.OpenStandardInput()))
 					{
 						textToCopy=sr.ReadToEnd();
-					}			
+					}
 					
 					if(textToCopy!=null)
 					{
-						Clipboard.SetText(textToCopy);
+						setClipBoardText(textToCopy);
 					}
 					
 					break;

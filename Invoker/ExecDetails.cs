@@ -20,6 +20,7 @@ namespace Invoker
 		public string comments="comments";
 		public string path;
 		public string []args;
+		public string workingDir;
 		public bool shell;
 		public Dictionary<string,string> env=new Dictionary<string, string>();		
 		public bool waitForExit=false;

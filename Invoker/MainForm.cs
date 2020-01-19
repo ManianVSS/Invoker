@@ -15,7 +15,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
+using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Invoker
@@ -81,7 +82,7 @@ namespace Invoker
 						{
 							if (m.WParam.ToInt32() == customHotKeys[i].HotkeyID)
 							{
-								performInvoke(hotKeyCommandDict[customHotKeys[i]]);
+								performInvokeOnNewThread(hotKeyCommandDict[customHotKeys[i]]);
 								break;
 							}
 						}
@@ -196,7 +197,7 @@ namespace Invoker
 		}
 		
 		void LoadProperties(string envName="default")
-		{			
+		{
 			if(!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory,"*.env.json").Any()) )
 			{
 				Directory.CreateDirectory(InvokerSettingDirectory);
@@ -216,7 +217,7 @@ namespace Invoker
 				}
 				else
 				{
-					MessageBox.Show("Settings file missing: "+originalSettingsFile+". Restore the file or repair application from control panel and try again.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);					
+					MessageBox.Show("Settings file missing: "+originalSettingsFile+". Restore the file or repair application from control panel and try again.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
 					Environment.Exit(-1);
 				}
 			}
@@ -656,93 +657,113 @@ namespace Invoker
 			Cursor.Current=Cursors.Default;
 		}
 		
+		void performInvokeOnNewThread(InvokeCommand invoke)
+		{
+			new Thread (()=>performInvoke(invoke)).Start();
+		}
+		
+		private readonly object invokeLock = new object();
+		
 		void performInvoke(InvokeCommand invoke)
 		{
-			foreach(ExecDetails command in invoke.commands)
+			lock(invokeLock)
 			{
-				switch(command.type)
+				foreach(ExecDetails command in invoke.commands)
 				{
-					case "run":
-						Process process=((command.args!=null)&&!string.IsNullOrEmpty(command.args[0]))
-							?Process.Start(replaceProperties(command.path),replaceProperties(string.Join(" ",command.args)))
-							:Process.Start(replaceProperties(command.path));
-						
-						if(command.waitForExit)
-						{
-							waitForProcessExit(process);
-						}
-						break;
-						
-					case "exec":
-						process = new Process();
-						process.StartInfo.UseShellExecute=command.shell;
-						process.StartInfo.FileName = replaceProperties(command.path);
-						process.StartInfo.Arguments=replaceProperties(string.Join(" ",command.args));
-						process.StartInfo.CreateNoWindow=command.hideWindow;
-						
-						if(command.saveOutput)
-						{
-							process.StartInfo.RedirectStandardOutput=true;
-							process.StartInfo.RedirectStandardError=true;
-							process.StartInfo.UseShellExecute=false;
-						}
-						
-						foreach(KeyValuePair<string,string> kvp in command.env)
-						{
-							process.StartInfo.EnvironmentVariables.Add(replaceProperties(kvp.Key),replaceProperties(kvp.Value));
-						}
-						
-						process.Start();
-						
-						if(command.saveOutput)
-						{
-							string output = process.StandardOutput.ReadToEnd();
-							string err = process.StandardError.ReadToEnd();
-							waitForProcessExit(process);
+					switch(command.type)
+					{
+						case "run":
+							Process process=((command.args!=null)&&!string.IsNullOrEmpty(command.args[0]))
+								?Process.Start(replaceProperties(command.path),replaceProperties(string.Join(" ",command.args)))
+								:Process.Start(replaceProperties(command.path));
 							
-							if(string.IsNullOrEmpty(command.outputProperty))
-							{
-								command.outputProperty="exec.out";
-							}
-							
-							execProperties[replaceProperties(command.outputProperty)]=output+err;
-						}
-						else
-						{
 							if(command.waitForExit)
 							{
 								waitForProcessExit(process);
 							}
-						}
-						break;
-						
-					case "reloadSettings":
-						reloadSettings();
-						break;
-						
-					case "toggleShowInvokerWindow":
-						toggleShowWindow();
-						break;
-						
-					case "toggleClipBoardCapture":
-						ToggleClipBoardCapture();
-						break;
-						
-					case "copyNextToClipBoard":
-						copyNextToClipBoard();
-						break;
-						
-					case "copyFromClipBoard":
-						copyFromClipBoard();
-						break;
-						
-					case "clearClipBoard":
-						clearClipBoard();
-						break;	
-						
-					default:
-						MessageBox.Show(replaceProperties(command.comments),"Info",MessageBoxButtons.OK,MessageBoxIcon.Information);
-						break;
+							break;
+							
+						case "exec":
+							process = new Process();
+							process.StartInfo.UseShellExecute=command.shell;
+							process.StartInfo.FileName = replaceProperties(command.path);
+							process.StartInfo.Arguments=replaceProperties(string.Join(" ",command.args));
+							process.StartInfo.CreateNoWindow=command.hideWindow;
+							
+							if(!string.IsNullOrEmpty(command.workingDir) && Directory.Exists(command.workingDir))
+							{
+								process.StartInfo.WorkingDirectory=command.workingDir;
+							}
+							
+							if(command.saveOutput)
+							{
+								process.StartInfo.RedirectStandardOutput=true;
+								process.StartInfo.RedirectStandardError=true;
+								process.StartInfo.UseShellExecute=false;
+							}
+							
+							foreach(KeyValuePair<string,string> kvp in command.env)
+							{
+								process.StartInfo.EnvironmentVariables.Add(replaceProperties(kvp.Key),replaceProperties(kvp.Value));
+							}
+							
+							process.Start();
+							
+							if(command.saveOutput)
+							{
+								string output = process.StandardOutput.ReadToEnd();
+								string err = process.StandardError.ReadToEnd();
+								waitForProcessExit(process);
+								
+								if(string.IsNullOrEmpty(command.outputProperty))
+								{
+									command.outputProperty="exec.out";
+								}
+								
+								execProperties[replaceProperties(command.outputProperty)]=output+err;
+							}
+							else
+							{
+								if(command.waitForExit)
+								{
+									waitForProcessExit(process);
+								}
+							}
+							break;
+							
+						case "reloadSettings":
+							reloadSettings();
+							break;
+							
+						case "toggleShowInvokerWindow":
+							toggleShowWindow();
+							break;
+							
+						case "toggleClipBoardCapture":
+							ToggleClipBoardCapture();
+							break;
+							
+						case "copyNextToClipBoard":
+							copyNextToClipBoard();
+							break;
+							
+						case "copyFromClipBoard":
+							copyFromClipBoard();
+							break;
+							
+						case "clearClipBoard":
+							clearClipBoard();
+							break;
+							
+						case "exportClipBoard":
+							string directory =(!string.IsNullOrEmpty(command.workingDir) && Directory.Exists(command.workingDir))?command.workingDir:InvokerSettingDirectory;
+							exportClipBoard(directory);
+							break;
+							
+						default:
+							MessageBox.Show(replaceProperties(command.comments),"Info",MessageBoxButtons.OK,MessageBoxIcon.Information);
+							break;
+					}
 				}
 			}
 		}
@@ -773,7 +794,7 @@ namespace Invoker
 				string prevpropertystr=PropertiesComboBox.Text;
 				
 				InvokeCommand invoke=invokerSettings.invokes[selectedIndex];
-				performInvoke(invoke);
+				performInvokeOnNewThread(invoke);
 				
 				comoboBoxRefreshed(commandsComboBox,prevcommandstr);
 				comoboBoxRefreshed(PropertiesComboBox,prevpropertystr);
@@ -786,7 +807,7 @@ namespace Invoker
 			
 			if(commandButtonInvokeDict.ContainsKey(clickedButton))
 			{
-				performInvoke(commandButtonInvokeDict[clickedButton]);
+				performInvokeOnNewThread(commandButtonInvokeDict[clickedButton]);
 			}
 		}
 		
@@ -1066,6 +1087,61 @@ namespace Invoker
 		void PasteFromClipBoardButtonClick(object sender, EventArgs e)
 		{
 			copyFromClipBoard();
+		}
+		
+		void exportClipBoard(string folder)
+		{
+			foreach(Object data in clipBoardQueue)
+			{
+				string tempFile=Path.GetTempFileName();
+				
+				if(tempFile.Contains("\\"))
+				{
+					tempFile=tempFile.Substring(tempFile.LastIndexOf("\\")+1);
+				}
+				if(tempFile.Contains("."))
+				{
+					tempFile=tempFile.Substring(0,tempFile.IndexOf("."));
+				}
+				
+				tempFile=Path.Combine(folder, tempFile);
+				
+				if(data is string)
+				{
+					File.WriteAllText(tempFile+".txt", (string)data);
+				}
+				else if(data is Image)
+				{
+					((Image)data).Save(tempFile+".png");
+				}
+				else if(data is StringCollection)
+				{
+					StringBuilder dataToWrite=new StringBuilder();
+					
+					foreach(String str in (StringCollection)data)
+					{
+						dataToWrite.Append(str+"\n");
+					}
+					File.WriteAllText(tempFile+".files", dataToWrite.ToString());
+				}
+				else
+				{
+					//Can't save unknown data object.
+				}
+			}
+		}
+		
+		
+		void ExportClipBoardButtonClick(object sender, EventArgs e)
+		{
+			switch(ExportClipboardFolderBrowserDialog.ShowDialog())
+			{
+				case DialogResult.OK:
+				case DialogResult.Yes:
+					string clipBoardExportDir=ExportClipboardFolderBrowserDialog.SelectedPath;
+					exportClipBoard(clipBoardExportDir);
+					break;
+			}
 		}
 	}
 }
