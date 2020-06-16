@@ -6,7 +6,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>7e32281c-b8d9-46d4-8969-79642b8cc469</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>InvokerSetupWiX</OutputName>
+    <OutputName>InvokerSetup</OutputName>
     <OutputType>Package</OutputType>
     <SupressIces>ICE45;ICE69</SupressIces>
     <WixVariables>WixUILicenseRtf=license.rtf</WixVariables>
