@@ -45,7 +45,7 @@ namespace ClipUtil
 					Clipboard.SetText(text);
 					break;
 				}
-				catch(Exception e)
+				catch(Exception)
 				{
 					currentTry++;
 					Thread.Sleep(1000);

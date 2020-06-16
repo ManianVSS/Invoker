@@ -147,6 +147,7 @@ namespace Invoker
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.commandToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.ExportClipboardFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+			this.PickInvokeTimer = new System.Windows.Forms.Timer(this.components);
 			this.trayContextMenuStrip.SuspendLayout();
 			this.Invoker_MainMenuStrip.SuspendLayout();
 			this.panel1.SuspendLayout();
@@ -196,11 +197,11 @@ namespace Invoker
 			// trayContextMenuStrip
 			// 
 			this.trayContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.TrayToggleHotKeyMenuItem,
-			this.toggleShowToolStripMenuItem,
-			this.clipboardCaptureToolStripMenuItem,
-			this.exitToolStripMenuItem,
-			this.trayEnvSelectorComboBox});
+									this.TrayToggleHotKeyMenuItem,
+									this.toggleShowToolStripMenuItem,
+									this.clipboardCaptureToolStripMenuItem,
+									this.exitToolStripMenuItem,
+									this.trayEnvSelectorComboBox});
 			this.trayContextMenuStrip.Name = "trayContextMenuStrip";
 			this.trayContextMenuStrip.Size = new System.Drawing.Size(210, 119);
 			// 
@@ -241,7 +242,7 @@ namespace Invoker
 			// Invoker_MainMenuStrip
 			// 
 			this.Invoker_MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.helpToolStripMenuItem});
+									this.helpToolStripMenuItem});
 			this.Invoker_MainMenuStrip.Location = new System.Drawing.Point(0, 0);
 			this.Invoker_MainMenuStrip.Name = "Invoker_MainMenuStrip";
 			this.Invoker_MainMenuStrip.Size = new System.Drawing.Size(701, 24);
@@ -251,7 +252,7 @@ namespace Invoker
 			// helpToolStripMenuItem
 			// 
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.aboutToolStripMenuItem});
+									this.aboutToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
 			this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.helpToolStripMenuItem.Text = "Help";
@@ -723,6 +724,11 @@ namespace Invoker
 			this.propertyGrid1.Size = new System.Drawing.Size(741, 555);
 			this.propertyGrid1.TabIndex = 0;
 			// 
+			// PickInvokeTimer
+			// 
+			this.PickInvokeTimer.Enabled = true;
+			this.PickInvokeTimer.Tick += new System.EventHandler(this.PickInvokeTimerTick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -773,7 +779,7 @@ namespace Invoker
 			((System.ComponentModel.ISupportInitialize)(this.ClipViewPictureBox)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
-
 		}
+		private System.Windows.Forms.Timer PickInvokeTimer;
 	}
 }

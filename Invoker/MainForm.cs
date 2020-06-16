@@ -18,6 +18,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Collections.Concurrent;
 
 namespace Invoker
 {
@@ -46,6 +47,8 @@ namespace Invoker
 		List<Button> commandButtons=new List<Button>();
 		Dictionary<Button,InvokeCommand> commandButtonInvokeDict=new Dictionary<Button, InvokeCommand>();
 		Dictionary<string,InvokeCommand> commandsDict=new Dictionary<string, InvokeCommand>();
+		
+		ConcurrentQueue<InvokeCommand> invokesToProcess = new ConcurrentQueue<InvokeCommand>();
 		
 		public MainForm()
 		{
@@ -82,7 +85,7 @@ namespace Invoker
 						{
 							if (m.WParam.ToInt32() == customHotKeys[i].HotkeyID)
 							{
-								performInvokeOnNewThread(hotKeyCommandDict[customHotKeys[i]]);
+								invokesToProcess.Enqueue(hotKeyCommandDict[customHotKeys[i]]);
 								break;
 							}
 						}
@@ -657,10 +660,10 @@ namespace Invoker
 			Cursor.Current=Cursors.Default;
 		}
 		
-		void performInvokeOnNewThread(InvokeCommand invoke)
-		{
-			new Thread (()=>performInvoke(invoke)).Start();
-		}
+//		void performInvokeOnNewThread(InvokeCommand invoke)
+//		{
+//			new Thread (()=>performInvoke(invoke)).Start();
+//		}
 		
 		private readonly object invokeLock = new object();
 		
@@ -794,7 +797,7 @@ namespace Invoker
 				string prevpropertystr=PropertiesComboBox.Text;
 				
 				InvokeCommand invoke=invokerSettings.invokes[selectedIndex];
-				performInvokeOnNewThread(invoke);
+				invokesToProcess.Enqueue(invoke);
 				
 				comoboBoxRefreshed(commandsComboBox,prevcommandstr);
 				comoboBoxRefreshed(PropertiesComboBox,prevpropertystr);
@@ -807,7 +810,7 @@ namespace Invoker
 			
 			if(commandButtonInvokeDict.ContainsKey(clickedButton))
 			{
-				performInvokeOnNewThread(commandButtonInvokeDict[clickedButton]);
+				invokesToProcess.Enqueue(commandButtonInvokeDict[clickedButton]);
 			}
 		}
 		
@@ -1141,6 +1144,16 @@ namespace Invoker
 					string clipBoardExportDir=ExportClipboardFolderBrowserDialog.SelectedPath;
 					exportClipBoard(clipBoardExportDir);
 					break;
+			}
+		}
+			
+		void PickInvokeTimerTick(object sender, EventArgs e)
+		{
+			InvokeCommand invokeCommand = null;
+
+			while (invokesToProcess.TryDequeue(out invokeCommand))
+			{
+				performInvoke(invokeCommand);
 			}
 		}
 	}

@@ -20,41 +20,41 @@ namespace Invoker
 	/// <summary>
 	/// Description of ClipboardNotificationForm.
 	/// </summary>
-	public class ClipboardNotificationForm : Form
+	public partial class ClipboardNotificationForm : Form
 	{
 		// defined in winuser.h
 		const int WM_DRAWCLIPBOARD = 0x308;
 		const int WM_CHANGECBCHAIN = 0x030D;
-		
+
 		IntPtr nextClipboardViewer;
-		protected bool clipboardNotificationsEnabled=false;
-		
+		protected bool clipboardNotificationsEnabled = false;
+
 		public bool EnableClipBoardNotifications()
 		{
-			if(!clipboardNotificationsEnabled)
+			if (!clipboardNotificationsEnabled)
 			{
 				nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
-				clipboardNotificationsEnabled=true;
+				clipboardNotificationsEnabled = true;
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		public bool DisableClipBoardNotifications()
 		{
-			if(clipboardNotificationsEnabled)
+			if (clipboardNotificationsEnabled)
 			{
 				ChangeClipboardChain(Handle, nextClipboardViewer);
-				clipboardNotificationsEnabled=false;
+				clipboardNotificationsEnabled = false;
 				return true;
 			}
 			return false;
 		}
-		
+
 		public void ToggleClipBoardNotifications()
 		{
-			if(clipboardNotificationsEnabled)
+			if (clipboardNotificationsEnabled)
 			{
 				DisableClipBoardNotifications();
 			}
@@ -63,7 +63,7 @@ namespace Invoker
 				EnableClipBoardNotifications();
 			}
 		}
-		
+
 		public event EventHandler<ClipboardChangedTextEventArgs> ClipboardChangedToText;
 		public event EventHandler<ClipboardChangedImageEventArgs> ClipboardChangedToImage;
 		public event EventHandler<ClipboardChangedFileListEventArgs> ClipboardChangedToFileList;
@@ -81,7 +81,7 @@ namespace Invoker
 
 		protected override void WndProc(ref System.Windows.Forms.Message m)
 		{
-			if(clipboardNotificationsEnabled)
+			if (clipboardNotificationsEnabled)
 			{
 				switch (m.Msg)
 				{
@@ -105,33 +105,33 @@ namespace Invoker
 		{
 			try
 			{
-				if(Clipboard.ContainsText())
+				if (Clipboard.ContainsText())
 				{
-					string text=Clipboard.GetText();
+					string text = Clipboard.GetText();
 					if (ClipboardChangedToText != null)
 					{
 						ClipboardChangedToText(this, new ClipboardChangedTextEventArgs(text));
 					}
 				}
-				else if(Clipboard.ContainsFileDropList())
+				else if (Clipboard.ContainsFileDropList())
 				{
-					var dropList=Clipboard.GetFileDropList();
+					var dropList = Clipboard.GetFileDropList();
 					if (ClipboardChangedToFileList != null)
 					{
 						ClipboardChangedToFileList(this, new ClipboardChangedFileListEventArgs(dropList));
 					}
 				}
-				else if(Clipboard.ContainsImage())
+				else if (Clipboard.ContainsImage())
 				{
-					Image image=Clipboard.GetImage();
+					Image image = Clipboard.GetImage();
 					if (ClipboardChangedToImage != null)
 					{
 						ClipboardChangedToImage(this, new ClipboardChangedImageEventArgs(image));
 					}
 				}
-				else if(Clipboard.ContainsAudio())
+				else if (Clipboard.ContainsAudio())
 				{
-					var audio=Clipboard.GetAudioStream();
+					var audio = Clipboard.GetAudioStream();
 					if (ClipboardChangedToAudioStream != null)
 					{
 						ClipboardChangedToAudioStream(this, new ClipboardChangedAudioStreamEventArgs(audio));
@@ -139,7 +139,7 @@ namespace Invoker
 				}
 				else
 				{
-					var dataObj=Clipboard.GetDataObject();
+					var dataObj = Clipboard.GetDataObject();
 					if (ClipboardChangedToData != null)
 					{
 						ClipboardChangedToData(this, new ClipboardChangedDataEventArgs(dataObj));
@@ -155,7 +155,7 @@ namespace Invoker
 			}
 		}
 	}
-	
+
 	public class ClipboardChangedTextEventArgs : EventArgs
 	{
 		public readonly string textData;
@@ -165,7 +165,7 @@ namespace Invoker
 			this.textData = textData;
 		}
 	}
-	
+
 	public class ClipboardChangedImageEventArgs : EventArgs
 	{
 		public readonly Image image;
@@ -175,7 +175,7 @@ namespace Invoker
 			this.image = image;
 		}
 	}
-	
+
 	public class ClipboardChangedFileListEventArgs : EventArgs
 	{
 		public readonly StringCollection fileList;
@@ -185,7 +185,7 @@ namespace Invoker
 			this.fileList = fileList;
 		}
 	}
-	
+
 	public class ClipboardChangedAudioStreamEventArgs : EventArgs
 	{
 		public readonly Stream audioStream;
@@ -195,8 +195,8 @@ namespace Invoker
 			this.audioStream = audioStream;
 		}
 	}
-	
-	
+
+
 	public class ClipboardChangedDataEventArgs : EventArgs
 	{
 		public readonly IDataObject DataObject;

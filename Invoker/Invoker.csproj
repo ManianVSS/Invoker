@@ -73,7 +73,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClipboardNotificationForm.cs" />
+    <Compile Include="ClipboardNotificationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClipboardNotificationForm.Designer.cs">
+      <DependentUpon>ClipboardNotificationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DrawOnScreen.cs" />
     <Compile Include="ExecDetails.cs" />
     <Compile Include="HotKey.cs" />
@@ -82,7 +87,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
     <Compile Include="GlobalHotKey.cs" />
-    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>

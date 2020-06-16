@@ -1,54 +1,54 @@
 ﻿<?xml version="1.0"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="Invoker" Language="1033" Version="1.3.0.0" UpgradeCode="8BCA9F62-A170-431D-84B2-C291455A33C2" Manufacturer="Manian VSS">
-		
-		<Package Description="Invoker package" Comments="Invoker" InstallerVersion="200" Compressed="yes" Platform="x64"/>
-		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
-		<MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
-		
-		<Icon Id="icon.ico" SourceFile="Invoker.ico"/>
-		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
-		
-		<!--<CustomAction Id="SpecifyUserFolder" Directory="UserFolder" Value="[%HOMEDRIVE][%HOMEPATH]Invoker" />-->
-		
-		<!-- Installation directory and files are defined in Files.wxs -->
-		<Directory Id="TARGETDIR" Name="SourceDir"/>
-		
-		<Feature Id="Complete"
+  <Product Id="*" Name="Invoker" Language="1033" Version="1.3.1.0" UpgradeCode="8BCA9F62-A170-431D-84B2-C291455A33C2" Manufacturer="Manian VSS">
+
+    <Package Description="Invoker package" Comments="Invoker" InstallerVersion="200" Compressed="yes" Platform="x64"/>
+    <Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+
+    <Icon Id="icon.ico" SourceFile="Invoker.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+    <!--<CustomAction Id="SpecifyUserFolder" Directory="UserFolder" Value="[%HOMEDRIVE][%HOMEPATH]Invoker" />-->
+
+    <!-- Installation directory and files are defined in Files.wxs -->
+    <Directory Id="TARGETDIR" Name="SourceDir"/>
+
+    <Feature Id="Complete"
 		         Title="Invoker"
 		         Description="Invoker"
 		         Level="1" ConfigurableDirectory="INSTALLDIR">
-			<Feature Id="Core" Title="Core Invoker Features" Level="1">
-				<ComponentRef Id="InvokerBinaries"/>
-				<ComponentRef Id="InvokerConfig"/>
-			</Feature>
-			<Feature Id="DesktopShortcut" Title="Desktop Shortcut" Level="1">
-				<ComponentRef Id="ApplicationShortcutDesktop"/>
-			</Feature>
-			<Feature Id="ProgramMenuShortcut" Title="Start menu Shortcut" Level="1">
-				<ComponentRef Id="ApplicationShortcut"/>
-			</Feature>
-			<Feature Id="Tools" Title="Additional tools" Level="1">
-				<ComponentRef Id="Tools"/>
-			</Feature>
-		</Feature>
-		
-		<!--<SetDirectory Id="WINDOWSVOLUME" Value="[WindowsVolume]"/>-->
-		
-		<!-- put this before installation process -->
-		<!--<InstallExecuteSequence>
+      <Feature Id="Core" Title="Core Invoker Features" Level="1">
+        <ComponentRef Id="InvokerBinaries"/>
+        <ComponentRef Id="InvokerConfig"/>
+      </Feature>
+      <Feature Id="DesktopShortcut" Title="Desktop Shortcut" Level="1">
+        <ComponentRef Id="ApplicationShortcutDesktop"/>
+      </Feature>
+      <Feature Id="ProgramMenuShortcut" Title="Start menu Shortcut" Level="1">
+        <ComponentRef Id="ApplicationShortcut"/>
+      </Feature>
+      <Feature Id="Tools" Title="Additional tools" Level="1">
+        <ComponentRef Id="Tools"/>
+      </Feature>
+    </Feature>
+
+    <!--<SetDirectory Id="WINDOWSVOLUME" Value="[WindowsVolume]"/>-->
+
+    <!-- put this before installation process -->
+    <!--<InstallExecuteSequence>
 			<Custom Action="SpecifyUserFolder" Before="InstallFiles" />
 		</InstallExecuteSequence>-->
-		
-		<!--
+
+    <!--
 			Using the Wix UI library
  
 			WixUI_InstallDir does not allow the user to choose 
 			features but adds a dialog to let the user choose a 
 			directory where the product will be installed
 		-->
-		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_FeatureTree"/>
-	</Product>
+    <Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
+    <UIRef Id="WixUI_FeatureTree"/>
+  </Product>
 </Wix>

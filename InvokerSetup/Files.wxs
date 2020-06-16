@@ -1,59 +1,59 @@
 ﻿<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Fragment>
-		<DirectoryRef Id="TARGETDIR">
-			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLDIR" Name="InvokerTool">
-					<Component Id="InvokerBinaries" Guid="C4B029EE-A7E1-4008-B76D-A64694FB82B8" DiskId="1" Win64="yes">
-						<File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
-						<File Id="GPL3LicenseFile" Name="gpl-3.0.txt" Source="gpl-3.0.txt"/>
-						<File Source="$(var.Invoker.TargetDir)Invoker.exe" />
-						<File Source="$(var.Invoker.TargetDir)Invoker.exe.config" />
-						<File Source="$(var.Invoker.TargetDir)default.env.json" />
-						<File Source="$(var.Invoker.TargetDir)HotKeyReference.txt" />
-						<File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.dll" />
-						<File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.xml" />
-					</Component>
-					<Component Id="InvokerConfig" Guid="E869D354-A1E4-4CE9-9F69-219E7A9DABEC" DiskId="1" Win64="yes">
-						<File Source="$(var.Invoker.TargetDir)InvokerSettings.json" />
-					</Component>
-					<Component Id="Tools" Guid="B35F5316-1AF6-4386-9F32-6C8140BD2795" DiskId="1" Win64="yes">
-						<File Source="$(var.ClipUtil.TargetDir)ClipUtil.exe" />
-					</Component>
-				</Directory>
-			</Directory>
-			
-			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="ApplicationShortcutDesktop" Guid="D8DBE96E-4DA6-48A3-826F-27214AC5B9E4" Win64="yes">
-					<Shortcut Id="ApplicationDesktopShortcut"
+  <Fragment>
+    <DirectoryRef Id="TARGETDIR">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLDIR" Name="InvokerTool">
+          <Component Id="InvokerBinaries" Guid="C4B029EE-A7E1-4008-B76D-A64694FB82B8" DiskId="1" Win64="yes">
+            <File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+            <File Id="GPL3LicenseFile" Name="gpl-3.0.txt" Source="gpl-3.0.txt"/>
+            <File Source="$(var.Invoker.TargetDir)Invoker.exe" />
+            <File Source="$(var.Invoker.TargetDir)Invoker.exe.config" />
+            <File Source="$(var.Invoker.TargetDir)default.env.json" />
+            <File Source="$(var.Invoker.TargetDir)HotKeyReference.txt" />
+            <File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.dll" />
+            <File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.xml" />
+          </Component>
+          <Component Id="InvokerConfig" Guid="E869D354-A1E4-4CE9-9F69-219E7A9DABEC" DiskId="1" Win64="yes">
+            <File Source="$(var.Invoker.TargetDir)InvokerSettings.json" />
+          </Component>
+          <Component Id="Tools" Guid="B35F5316-1AF6-4386-9F32-6C8140BD2795" DiskId="1" Win64="yes">
+            <File Source="$(var.ClipUtil.TargetDir)ClipUtil.exe" />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="ApplicationShortcutDesktop" Guid="D8DBE96E-4DA6-48A3-826F-27214AC5B9E4" Win64="yes">
+          <Shortcut Id="ApplicationDesktopShortcut"
 					          Name="Invoker"
 					          Description="Invoker tool for Edison Edge platform"
 					          Target="[INSTALLDIR]Invoker.exe"
 					          WorkingDirectory="INSTALLDIR"/>
-					<RemoveFolder Id="DesktopFolder" On="uninstall"/>
-					<RegistryValue
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+          <RegistryValue
 						Root="HKCU"
 						Key="Software/Invoker"
 						Name="installed"
 						Type="integer"
 						Value="1"
 						KeyPath="yes"/>
-				</Component>
-			</Directory>
-			
-			<Directory Id="ProgramMenuFolder">
-				<Directory Id="ApplicationProgramsFolder" Name="Invoker">
-					<Component Id="ApplicationShortcut" Guid="92509D90-F9A7-427A-B486-190F8C9B2615">
-						<Shortcut Id="ApplicationStartMenuShortcut"
+        </Component>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Invoker">
+          <Component Id="ApplicationShortcut" Guid="92509D90-F9A7-427A-B486-190F8C9B2615">
+            <Shortcut Id="ApplicationStartMenuShortcut"
 						          Name="Invoker"
 						          Description="Invoker - A customizable launcher utility."
 						          Target="[!Invoker.exe]"
 						          WorkingDirectory="INSTALLDIR"/>
-						<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
-						<RegistryValue Root="HKCU" Key="Software\ManianVSS\Invoker" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-					</Component>
-				</Directory>
-			</Directory>
-		</DirectoryRef>
-	</Fragment>
+            <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key="Software\ManianVSS\Invoker" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+    </DirectoryRef>
+  </Fragment>
 </Wix>
