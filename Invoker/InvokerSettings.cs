@@ -20,46 +20,40 @@ using Newtonsoft.Json.Converters;
 
 namespace Invoker
 {
-	/// <summary>
-	/// Description of InvokerSettings.
-	/// </summary>
-	public class InvokerSettings
-	{
-		public Dictionary<string,string> properties=new Dictionary<string, string>();
-		public List<InvokeCommand> invokes=new List<InvokeCommand>();
-		
-		public InvokerSettings()
-		{
-		}
-		
-		public InvokerSettings(Dictionary<string,string> properties)
-		{
-			foreach(KeyValuePair<string,string>kvp in properties)
-			{
-				this.properties.Add(kvp.Key,kvp.Value);
-			}
-		}
-		
-		public static InvokerSettings getFromFile(string file)
-		{
-			InvokerSettings invokerSettings= JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file));
-			
-			if(invokerSettings.properties==null)
-			{
-				invokerSettings.properties=new Dictionary<string, string>();
-			}
-			
-			if(invokerSettings.invokes==null)
-			{
-				invokerSettings.invokes=new List<InvokeCommand>();
-			}
-			
-			return invokerSettings;
-		}
-		
-		public void saveToFile(string file)
-		{
-			File.WriteAllText(file,JsonConvert.SerializeObject(this));
-		}
-	}
+    /// <summary>
+    /// Description of InvokerSettings.
+    /// </summary>
+    public class InvokerSettings
+    {
+        public Dictionary<string, EnvironmentSettings> environmentSettings;
+
+        public void Initialize()
+        {
+            if (environmentSettings == null)
+            {
+                environmentSettings = new Dictionary<string, EnvironmentSettings>();
+            }
+            if (!environmentSettings.ContainsKey("default"))
+            {
+                environmentSettings["default"] = new EnvironmentSettings();
+            }
+        }
+
+        public InvokerSettings()
+        {
+            Initialize();
+        }
+
+        public static InvokerSettings getFromFile(string file)
+        {
+            InvokerSettings invokerSettings = JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file));
+            invokerSettings.Initialize();
+            return invokerSettings;
+        }
+
+        public void saveToFile(string file)
+        {
+            File.WriteAllText(file, JsonConvert.SerializeObject(this));
+        }
+    }
 }

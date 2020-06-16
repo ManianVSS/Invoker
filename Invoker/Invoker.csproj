@@ -80,6 +80,7 @@
       <DependentUpon>ClipboardNotificationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DrawOnScreen.cs" />
+    <Compile Include="EnvironmentSettings.cs" />
     <Compile Include="ExecDetails.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="InvokeCommand.cs" />
