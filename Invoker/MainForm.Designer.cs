@@ -108,6 +108,10 @@ namespace Invoker
             this.TabControl_InvokerMain = new System.Windows.Forms.TabControl();
             this.MainTab = new System.Windows.Forms.TabPage();
             this.SC_DashBoardMain = new System.Windows.Forms.SplitContainer();
+            this.OpenSettingsButton = new System.Windows.Forms.Button();
+            this.OpenEnvSettingsButton = new System.Windows.Forms.Button();
+            this.EnvironmentTypeTextBox = new System.Windows.Forms.TextBox();
+            this.label_EnvType = new System.Windows.Forms.Label();
             this.HideInvokerWindowButton = new System.Windows.Forms.Button();
             this.ToggleHotKeysButton = new System.Windows.Forms.Button();
             this.SaveEnvSettingsButton = new System.Windows.Forms.Button();
@@ -148,8 +152,6 @@ namespace Invoker
             this.commandToolTips = new System.Windows.Forms.ToolTip(this.components);
             this.ExportClipboardFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.PickInvokeTimer = new System.Windows.Forms.Timer(this.components);
-            this.label_EnvType = new System.Windows.Forms.Label();
-            this.EnvironmentTypeTextBox = new System.Windows.Forms.TextBox();
             this.trayContextMenuStrip.SuspendLayout();
             this.Invoker_MainMenuStrip.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -306,6 +308,8 @@ namespace Invoker
             // 
             // SC_DashBoardMain.Panel1
             // 
+            this.SC_DashBoardMain.Panel1.Controls.Add(this.OpenSettingsButton);
+            this.SC_DashBoardMain.Panel1.Controls.Add(this.OpenEnvSettingsButton);
             this.SC_DashBoardMain.Panel1.Controls.Add(this.EnvironmentTypeTextBox);
             this.SC_DashBoardMain.Panel1.Controls.Add(this.label_EnvType);
             this.SC_DashBoardMain.Panel1.Controls.Add(this.HideInvokerWindowButton);
@@ -324,6 +328,42 @@ namespace Invoker
             this.SC_DashBoardMain.Size = new System.Drawing.Size(687, 417);
             this.SC_DashBoardMain.SplitterDistance = 91;
             this.SC_DashBoardMain.TabIndex = 0;
+            // 
+            // OpenSettingsButton
+            // 
+            this.OpenSettingsButton.Location = new System.Drawing.Point(556, 32);
+            this.OpenSettingsButton.Name = "OpenSettingsButton";
+            this.OpenSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.OpenSettingsButton.TabIndex = 12;
+            this.OpenSettingsButton.Text = "Open Settings";
+            this.OpenSettingsButton.UseVisualStyleBackColor = true;
+            this.OpenSettingsButton.Click += new System.EventHandler(this.OpenSettingsButton_Click);
+            // 
+            // OpenEnvSettingsButton
+            // 
+            this.OpenEnvSettingsButton.Location = new System.Drawing.Point(556, 8);
+            this.OpenEnvSettingsButton.Name = "OpenEnvSettingsButton";
+            this.OpenEnvSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.OpenEnvSettingsButton.TabIndex = 11;
+            this.OpenEnvSettingsButton.Text = "Open Env Settings";
+            this.OpenEnvSettingsButton.UseVisualStyleBackColor = true;
+            this.OpenEnvSettingsButton.Click += new System.EventHandler(this.OpenEnvSettingsButton_Click);
+            // 
+            // EnvironmentTypeTextBox
+            // 
+            this.EnvironmentTypeTextBox.Location = new System.Drawing.Point(84, 32);
+            this.EnvironmentTypeTextBox.Name = "EnvironmentTypeTextBox";
+            this.EnvironmentTypeTextBox.ReadOnly = true;
+            this.EnvironmentTypeTextBox.Size = new System.Drawing.Size(282, 20);
+            this.EnvironmentTypeTextBox.TabIndex = 10;
+            // 
+            // label_EnvType
+            // 
+            this.label_EnvType.Location = new System.Drawing.Point(39, 34);
+            this.label_EnvType.Name = "label_EnvType";
+            this.label_EnvType.Size = new System.Drawing.Size(39, 23);
+            this.label_EnvType.TabIndex = 9;
+            this.label_EnvType.Text = "Type:";
             // 
             // HideInvokerWindowButton
             // 
@@ -735,22 +775,6 @@ namespace Invoker
             this.PickInvokeTimer.Enabled = true;
             this.PickInvokeTimer.Tick += new System.EventHandler(this.PickInvokeTimerTick);
             // 
-            // label_EnvType
-            // 
-            this.label_EnvType.Location = new System.Drawing.Point(39, 34);
-            this.label_EnvType.Name = "label_EnvType";
-            this.label_EnvType.Size = new System.Drawing.Size(39, 23);
-            this.label_EnvType.TabIndex = 9;
-            this.label_EnvType.Text = "Type:";
-            // 
-            // EnvironmentTypeTextBox
-            // 
-            this.EnvironmentTypeTextBox.Location = new System.Drawing.Point(84, 32);
-            this.EnvironmentTypeTextBox.Name = "EnvironmentTypeTextBox";
-            this.EnvironmentTypeTextBox.ReadOnly = true;
-            this.EnvironmentTypeTextBox.Size = new System.Drawing.Size(282, 20);
-            this.EnvironmentTypeTextBox.TabIndex = 10;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -807,5 +831,7 @@ namespace Invoker
 		private System.Windows.Forms.Timer PickInvokeTimer;
         private System.Windows.Forms.TextBox EnvironmentTypeTextBox;
         private System.Windows.Forms.Label label_EnvType;
+        private System.Windows.Forms.Button OpenSettingsButton;
+        private System.Windows.Forms.Button OpenEnvSettingsButton;
     }
 }

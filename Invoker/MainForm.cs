@@ -27,6 +27,9 @@ namespace Invoker
     /// </summary>
     public partial class MainForm : ClipboardNotificationForm
     {
+        private const string ENV_JSON_EXTN = ".env.json";
+        private const string SEARCH_PATTERN_ENV_JSON = "*.env.json";
+
         static string InvokerSettingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.invoker\\";
         static string assemblyLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\";
         static string originalSettingsFile = assemblyLocation + "InvokerSettings.json";
@@ -197,11 +200,11 @@ namespace Invoker
 
         void LoadProperties(string envName = "default", string envType = "default")
         {
-            if (!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory, "*.env.json").Any()))
+            if (!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_JSON).Any()))
             {
                 Directory.CreateDirectory(InvokerSettingDirectory);
 
-                foreach (string envFile in Directory.GetFiles(assemblyLocation, "*.env.json"))
+                foreach (string envFile in Directory.GetFiles(assemblyLocation, SEARCH_PATTERN_ENV_JSON))
                 {
                     FileInfo srcFI = new FileInfo(envFile);
                     srcFI.CopyTo(InvokerSettingDirectory + "\\" + srcFI.Name, false);
@@ -226,7 +229,7 @@ namespace Invoker
 
             execProperties.Clear();
             execProperties.Add("_invoker_general_properties_file", new FileInfo(userSettingsFile).FullName);
-            execProperties.Add("_invoker_environment_settings_file", InvokerSettingDirectory + envName + ".env.json");
+            execProperties.Add("_invoker_environment_settings_file", InvokerSettingDirectory + envName + ENV_JSON_EXTN);
             execProperties.Add("_specialChar_newLine", "\n");
             execProperties.Add("_specialChar_backspace", "\b");
             execProperties.Add("_specialChar_escape", '\x1b'.ToString());
@@ -237,10 +240,10 @@ namespace Invoker
             EnvironmentSelectionComboBox.Items.Clear();
             trayEnvSelectorComboBox.Items.Clear();
 
-            foreach (string envFile in Directory.GetFiles(InvokerSettingDirectory, "*.env.json"))
+            foreach (string envFile in Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_JSON))
             {
                 string baseFileName = Path.GetFileName(envFile);
-                string envAlias = baseFileName.Substring(0, baseFileName.IndexOf(".env.json"));
+                string envAlias = baseFileName.Substring(0, baseFileName.IndexOf(ENV_JSON_EXTN));
                 EnvironmentSelectionComboBox.Items.Add(envAlias);
                 trayEnvSelectorComboBox.Items.Add(envAlias);
                 envSettingsMap.Add(envAlias, EnvironmentSettings.getFromFile(envFile));
@@ -736,6 +739,14 @@ namespace Invoker
                             reloadSettings();
                             break;
 
+                        case "OpenSettingsFile":
+                            OpenSettingsFile();
+                            break;
+
+                        case "OpenEnvSettingsFile":
+                            OpenEnvSettingsFile();
+                            break;
+
                         case "toggleShowInvokerWindow":
                             toggleShowWindow();
                             break;
@@ -1154,6 +1165,27 @@ namespace Invoker
             {
                 performInvoke(invokeCommand);
             }
+        }
+
+
+        private void OpenEnvSettingsFile()
+        {
+            Process.Start(Path.Combine(InvokerSettingDirectory, EnvironmentSelectionComboBox.Text + ENV_JSON_EXTN));
+        }
+
+        private void OpenSettingsFile()
+        {
+            Process.Start(userSettingsFile);
+        }
+
+        private void OpenSettingsButton_Click(object sender, EventArgs e)
+        {
+            OpenSettingsFile();
+        }
+
+        private void OpenEnvSettingsButton_Click(object sender, EventArgs e)
+        {
+            OpenEnvSettingsFile();
         }
     }
 }
