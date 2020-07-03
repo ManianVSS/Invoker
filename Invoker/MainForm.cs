@@ -169,7 +169,10 @@ namespace Invoker
                         }
                     }
                 }
-                PropertiesComboBox.Items.AddRange(currentEnvSettings.properties.Keys.ToArray());
+                foreach (KeyValuePair<string, string> property in currentEnvSettings.properties.OrderBy(prop => prop.Key))
+                {
+                    PropertiesComboBox.Items.Add(property.Key);
+                }
             }
 
             EnvironmentTypeTextBox.Text = currentEnvSettings.type;
