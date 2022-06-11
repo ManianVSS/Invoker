@@ -28,7 +28,9 @@ namespace Invoker
     public partial class MainForm : ClipboardNotificationForm
     {
         private const string ENV_JSON_EXTN = ".env.json";
+        private const string ENV_YAML_EXTN = ".env.yaml";
         private const string SEARCH_PATTERN_ENV_JSON = "*.env.json";
+        private const string SEARCH_PATTERN_ENV_YAML = "*.env.yaml";
 
         static string InvokerSettingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.invoker\\";
         static string assemblyLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\";
@@ -203,11 +205,17 @@ namespace Invoker
 
         void LoadProperties(string envName = "default", string envType = "default")
         {
-            if (!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_JSON).Any()))
+            if (!Directory.Exists(InvokerSettingDirectory) || (!Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_JSON).Any() && !Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_YAML).Any()))
             {
                 Directory.CreateDirectory(InvokerSettingDirectory);
 
                 foreach (string envFile in Directory.GetFiles(assemblyLocation, SEARCH_PATTERN_ENV_JSON))
+                {
+                    FileInfo srcFI = new FileInfo(envFile);
+                    srcFI.CopyTo(InvokerSettingDirectory + "\\" + srcFI.Name, false);
+                }
+
+                foreach (string envFile in Directory.GetFiles(assemblyLocation, SEARCH_PATTERN_ENV_YAML))
                 {
                     FileInfo srcFI = new FileInfo(envFile);
                     srcFI.CopyTo(InvokerSettingDirectory + "\\" + srcFI.Name, false);
@@ -251,6 +259,16 @@ namespace Invoker
                 trayEnvSelectorComboBox.Items.Add(envAlias);
                 envSettingsMap.Add(envAlias, EnvironmentSettings.getFromFile(envFile));
             }
+
+            foreach (string envFile in Directory.GetFiles(InvokerSettingDirectory, SEARCH_PATTERN_ENV_YAML))
+            {
+                string baseFileName = Path.GetFileName(envFile);
+                string envAlias = baseFileName.Substring(0, baseFileName.IndexOf(ENV_YAML_EXTN));
+                EnvironmentSelectionComboBox.Items.Add(envAlias);
+                trayEnvSelectorComboBox.Items.Add(envAlias);
+                envSettingsMap.Add(envAlias, EnvironmentSettings.getFromFile(envFile));
+            }
+
 
 
             //Selecting the environment will apply the settings

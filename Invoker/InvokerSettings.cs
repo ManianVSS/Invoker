@@ -17,6 +17,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Invoker
 {
@@ -27,7 +29,9 @@ namespace Invoker
     {
         public Dictionary<string, EnvironmentSettings> environmentSettings;
 
-        public void Initialize()
+        private static readonly IDeserializer deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+
+        public InvokerSettings Initialize()
         {
             if (environmentSettings == null)
             {
@@ -37,6 +41,7 @@ namespace Invoker
             {
                 environmentSettings["default"] = new EnvironmentSettings();
             }
+            return this;
         }
 
         public InvokerSettings()
@@ -45,10 +50,15 @@ namespace Invoker
         }
 
         public static InvokerSettings getFromFile(string file)
-        {
-            InvokerSettings invokerSettings = JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file));
-            invokerSettings.Initialize();
-            return invokerSettings;
+        {           
+            if (file.ToLower().EndsWith(".yaml") || file.ToLower().EndsWith(".yml"))
+            {
+                return deserializer.Deserialize<InvokerSettings>(File.ReadAllText(file)).Initialize();
+            }
+            else
+            {
+                return  JsonConvert.DeserializeObject<InvokerSettings>(File.ReadAllText(file)).Initialize();
+            }           
         }
 
         public void saveToFile(string file)
