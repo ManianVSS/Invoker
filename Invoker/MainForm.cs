@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Concurrent;
+//using RestSharp;
 
 namespace Invoker
 {
@@ -269,8 +270,6 @@ namespace Invoker
                 envSettingsMap.Add(envAlias, EnvironmentSettings.getFromFile(envFile));
             }
 
-
-
             //Selecting the environment will apply the settings
             if (EnvironmentSelectionComboBox.Items.Contains(envName))
             {
@@ -285,6 +284,47 @@ namespace Invoker
             EnvironmentCollectionChanged();
         }
 
+        string replaceFunction(string processStr, string toReplaceStr, string replaceWithStr, ref bool replacementFound)
+        {
+            string replacedString = processStr;
+
+            if (processStr.Contains(toReplaceStr))
+            {
+                replacementFound = true;
+                replacedString = replacedString.Replace(toReplaceStr, replaceWithStr);
+            }
+
+            return replacedString;
+        }
+
+        string getClipBoardDataAsText()
+        {
+            if (Clipboard.ContainsText())
+            {
+                return Clipboard.GetText();
+            }
+            else if (Clipboard.ContainsFileDropList())
+            {
+                StringCollection fileList = Clipboard.GetFileDropList();
+                return fileList.ToString();
+            }
+            else if (Clipboard.ContainsImage())
+            {
+                Image image = Clipboard.GetImage();
+                return image.ToString();
+            }
+            else if (Clipboard.ContainsAudio())
+            {
+                Stream audioStream = Clipboard.GetAudioStream();
+                return audioStream.ToString();
+            }
+            else
+            {
+                IDataObject dataObject = Clipboard.GetDataObject();
+                return dataObject.ToString();
+            }
+        }
+
         string replaceProperties(string inputStr)
         {
             bool replacementFound = false;
@@ -292,51 +332,30 @@ namespace Invoker
             string processStr = inputStr;
             string envName = EnvironmentSelectionComboBox.Text;
 
+
+            //processStr = replaceFunction(processStr, "$__clipboardText__", prop.Value, ref replacementFound);
+            execProperties["clipboardText"] = getClipBoardDataAsText();
             foreach (KeyValuePair<string, string> prop in execProperties)
             {
-                string replaceStr = "$var{" + prop.Key + "}";
-
-                if (processStr.Contains(replaceStr))
-                {
-                    replacementFound = true;
-                    processStr = processStr.Replace(replaceStr, prop.Value);
-                }
+                processStr = replaceFunction(processStr, "$var{" + prop.Key + "}", prop.Value, ref replacementFound);
             }
 
             var envVars = Environment.GetEnvironmentVariables();
             foreach (string envVarKey in envVars.Keys)
             {
-                string replaceStr = "$env{" + envVarKey + "}";
-
-                if (processStr.Contains(replaceStr))
-                {
-                    replacementFound = true;
-                    processStr = processStr.Replace(replaceStr, Environment.GetEnvironmentVariable(envVarKey));
-                }
+                processStr = replaceFunction(processStr, "env{" + envVarKey + "}", Environment.GetEnvironmentVariable(envVarKey), ref replacementFound);
             }
 
             EnvironmentSettings envSettings = envSettingsMap[EnvironmentSelectionComboBox.Text];
             foreach (KeyValuePair<string, string> prop in envSettings.properties)
             {
-                string replaceStr = "${" + prop.Key + "}";
-
-                if (processStr.Contains(replaceStr))
-                {
-                    replacementFound = true;
-                    processStr = processStr.Replace(replaceStr, prop.Value);
-                }
+                processStr = replaceFunction(processStr, "${" + prop.Key + "}", prop.Value, ref replacementFound);
             }
 
             string type = invokerSettings.environmentSettings.ContainsKey(currentEnvSettings.type) ? currentEnvSettings.type : "default";
             foreach (KeyValuePair<string, string> prop in invokerSettings.environmentSettings[type].properties)
             {
-                string replaceStr = "${" + prop.Key + "}";
-
-                if (processStr.Contains(replaceStr))
-                {
-                    replacementFound = true;
-                    processStr = processStr.Replace(replaceStr, prop.Value);
-                }
+                processStr = replaceFunction(processStr, "${" + prop.Key + "}", prop.Value, ref replacementFound);
             }
 
             return replacementFound ? replaceProperties(processStr) : processStr;
@@ -755,6 +774,13 @@ namespace Invoker
                                 }
                             }
                             break;
+
+                        //case "api":
+                        //    RestClient restClient = new RestClient("");
+                        //    RestRequest request = new RestRequest();
+                        //    request.Method = Method.Get;
+                        //    RestResponse response = restClient.Post(request);
+                        //    break;
 
                         case "reloadSettings":
                             reloadSettings();
