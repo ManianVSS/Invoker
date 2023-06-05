@@ -2,7 +2,7 @@
   "environmentSettings": {
     "default": {
       "properties": {
-        "chrome.path": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        "chrome.path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "PuTTY.path": "C:\\Program Files\\PuTTY\\PuTTY.exe",
         "winscp.com.path": "c:\\Program Files (x86)\\WinSCP\\WinSCP.com",
         "winscp.path": "c:\\Program Files (x86)\\WinSCP\\WinSCP.exe",
@@ -11,7 +11,8 @@
         "host.puttyPort": "22",
         "host.username": "user",
         "host.password": "password",
-        "host.vncPort": "1"
+        "host.vncPort": "1",
+        "downloadertool.path": "$env{USERPROFILE}\\Downloads\\yt-dlp.exe"
       },
       "invokes": [
         {
@@ -168,9 +169,27 @@
               "comments": "$var{ping.output}"
             }
           ]
+        },
+        {
+          "name": "Download URL",
+          "description": "Downloads the content of the URL in clipboard using the specified download tool",
+          "enableButton": true,
+          "hotkeyString": "CTRL+SHIFT+D",
+          "commands": [
+            {
+              "type": "exec",
+              "path": "${downloadertool.path}",
+              "args": [
+                "$var{clipboardText}"
+              ],              
+              "hideWindow": false,
+              "shell": true,
+              "env": {},
+              "waitForExit": false
+            }
+          ]
         }
       ]
     }
-
   }
 }

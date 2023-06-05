@@ -16,6 +16,7 @@ namespace Invoker
     {
         public Dictionary<string, string> properties = new Dictionary<string, string>();
         public List<InvokeCommand> invokes = new List<InvokeCommand>();
+        //public Dictionary<string, string> registryKeys = new Dictionary<string, string>();
         public string type = "default";
 
         private static readonly IDeserializer deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();

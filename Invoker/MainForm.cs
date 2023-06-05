@@ -343,7 +343,7 @@ namespace Invoker
             var envVars = Environment.GetEnvironmentVariables();
             foreach (string envVarKey in envVars.Keys)
             {
-                processStr = replaceFunction(processStr, "env{" + envVarKey + "}", Environment.GetEnvironmentVariable(envVarKey), ref replacementFound);
+                processStr = replaceFunction(processStr, "$env{" + envVarKey + "}", Environment.GetEnvironmentVariable(envVarKey), ref replacementFound);
             }
 
             EnvironmentSettings envSettings = envSettingsMap[EnvironmentSelectionComboBox.Text];
@@ -737,6 +737,10 @@ namespace Invoker
                             if (!string.IsNullOrEmpty(command.workingDir) && Directory.Exists(command.workingDir))
                             {
                                 process.StartInfo.WorkingDirectory = command.workingDir;
+                            }
+                            else
+                            {
+                                process.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                             }
 
                             if (command.saveOutput)
