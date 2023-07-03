@@ -171,8 +171,8 @@
           ]
         },
         {
-          "name": "Download URL",
-          "description": "Downloads the content of the URL in clipboard using the specified download tool",
+          "name": "Download Video URL",
+          "description": "Downloads the video from the URL using configured the downloader tool.",
           "enableButton": true,
           "hotkeyString": "CTRL+SHIFT+D",
           "commands": [
@@ -181,7 +181,25 @@
               "path": "${downloadertool.path}",
               "args": [
                 "$var{clipboardText}"
-              ],              
+              ],
+              "hideWindow": false,
+              "shell": true,
+              "env": {},
+              "waitForExit": false
+            }
+          ]
+        },
+        {
+          "name": "Download Audio URL",
+          "description": "Downloads the audio from the URL using configured the downloader tool.",
+          "enableButton": true,
+          "commands": [
+            {
+              "type": "exec",
+              "path": "${downloadertool.path}",
+              "args": [
+                "--extract-audio $var{clipboardText}"
+              ],
               "hideWindow": false,
               "shell": true,
               "env": {},

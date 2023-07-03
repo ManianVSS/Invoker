@@ -51,7 +51,7 @@
         <Component Id="ApplicationShortcutDesktop" Guid="D8DBE96E-4DA6-48A3-826F-27214AC5B9E4" Win64="yes">
           <Shortcut Id="ApplicationDesktopShortcut"
 					          Name="Invoker"
-					          Description="Invoker tool for Edison Edge platform"
+					          Description="Invoker is launcher tool for software development/engineering on multiple environments."
 					          Target="[INSTALLDIR]Invoker.exe"
 					          WorkingDirectory="INSTALLDIR"/>
           <RemoveFolder Id="DesktopFolder" On="uninstall"/>
