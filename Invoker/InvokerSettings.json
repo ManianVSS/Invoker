@@ -198,7 +198,7 @@
               "type": "exec",
               "path": "${downloadertool.path}",
               "args": [
-                "--extract-audio $var{clipboardText}"
+                "--extract-audio --audio-format mp3 $var{clipboardText}"
               ],
               "hideWindow": false,
               "shell": true,
