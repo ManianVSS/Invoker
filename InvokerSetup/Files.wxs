@@ -13,29 +13,17 @@
             <File Source="$(var.Invoker.TargetDir)Invoker.exe.config" />
             <File Source="$(var.Invoker.TargetDir)invoker.ico" />
             <File Source="$(var.Invoker.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" />
-            <File Source="$(var.Invoker.TargetDir)Microsoft.Bcl.AsyncInterfaces.xml" />
             <File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.dll" />
-            <File Source="$(var.Invoker.TargetDir)Newtonsoft.Json.xml" />
             <File Source="$(var.Invoker.TargetDir)RestSharp.dll" />
-            <File Source="$(var.Invoker.TargetDir)RestSharp.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Buffers.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Buffers.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Memory.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Memory.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Numerics.Vectors.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Numerics.Vectors.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Runtime.CompilerServices.Unsafe.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Text.Encodings.Web.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Text.Encodings.Web.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Text.Json.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Text.Json.xml" />
             <File Source="$(var.Invoker.TargetDir)System.Threading.Tasks.Extensions.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.Threading.Tasks.Extensions.xml" />
             <File Source="$(var.Invoker.TargetDir)System.ValueTuple.dll" />
-            <File Source="$(var.Invoker.TargetDir)System.ValueTuple.xml" />
-            <File Source="$(var.Invoker.TargetDir)YamlDotNet.dll" />
-            <File Source="$(var.Invoker.TargetDir)YamlDotNet.xml" />
+            <File Source="$(var.Invoker.TargetDir)YamlDotNet.dll" />            
           </Component>
           <Component Id="InvokerConfig" Guid="E869D354-A1E4-4CE9-9F69-219E7A9DABEC" DiskId="1" Win64="yes">
             <File Source="$(var.Invoker.TargetDir)InvokerSettings.json" />
